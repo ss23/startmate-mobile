@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:oauth2_client/oauth2_client.dart';
 import 'package:provider/provider.dart';
+import 'package:start_gg_app/event.dart';
 import 'package:start_gg_app/tournament.dart';
 import 'package:oauth2_client/oauth2_helper.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:start_gg_app/videogame.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:intl/intl.dart';
+
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class StartGGOAuth2Client extends OAuth2Client {
@@ -29,33 +33,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (context) => MyAppState(),
-        child: MaterialApp(home: MyHomePage(), title: "Start_gg_app"));
+        child: MaterialApp(
+          home: const MyHomePage(),
+          title: "Start_gg_app",
+          theme: ThemeData(
+            useMaterial3: true,
+          ),
+        ));
   }
 }
 
 class MyAppState extends ChangeNotifier {
-  // TODO: Storage of tournaments, not just loading fresh every time
-  var registeredTournaments = <Tournament>[];
-  var lastTournamentSync =
-      DateTime.utc(2000, 01, 01); // Sentinal for "never synced"
+  // TODO: Storage of events, not just loading fresh every time
+  var upcomingTournaments = <Tournament>[];
+  var lastTournamentSync = DateTime.utc(2000, 01, 01); // Sentinal for "never synced"
   late OAuth2Helper oauth2Helper;
   String accessToken = "";
 
   MyAppState() {
-    addTournament();
     configureOauth();
     notifyListeners();
-  }
-
-  void addTournament() {
-    registeredTournaments.add(Tournament(1, "foo",
-        "https://images.start.gg/images/tournament/599117/image-00444799c9badea9a5e1ad6a1e6aae20-optimized.png"));
-    registeredTournaments.add(Tournament(2, "popoff",
-        "https://images.start.gg/images/tournament/599117/image-00444799c9badea9a5e1ad6a1e6aae20-optimized.png"));
-    registeredTournaments.add(Tournament(3, "booper",
-        "https://images.start.gg/images/tournament/599117/image-00444799c9badea9a5e1ad6a1e6aae20-optimized.png"));
-    registeredTournaments.add(Tournament(4, "a",
-        "https://images.start.gg/images/tournament/599117/image-00444799c9badea9a5e1ad6a1e6aae20-optimized.png"));
   }
 
   void updateTournaments({bool force = false}) {
@@ -64,16 +61,14 @@ class MyAppState extends ChangeNotifier {
                 .subtract(const Duration(minutes: 5))
                 .compareTo(lastTournamentSync) >
             0) {
-      print("Should sync!");
+      debugPrint("Should sync!");
       updateTournamentsForReal();
     } else {
-      print("Skipping sync");
+      debugPrint("Skipping sync");
     }
   }
 
   Future<void> updateTournamentsForReal() async {
-    await initHiveForFlutter();
-
     final HttpLink httpLink = HttpLink(
       'https://api.start.gg/gql/alpha',
     );
@@ -86,35 +81,69 @@ class MyAppState extends ChangeNotifier {
     GraphQLClient client = GraphQLClient(
       link: link,
       // The default store is the InMemoryStore, which does NOT persist to disk
-      cache: GraphQLCache(store: HiveStore()),
+      cache: GraphQLCache(
+      ),
     );
 
+    // One query to select all the information we need about upcoming events, etc
+    // TODO: Pagination
+    var query = r'query user { currentUser { tournaments(query: { filter: { upcoming: true, } } ) { nodes { id, addrState, city, countryCode, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, videogame { id, name, displayName } } } } } }';
     QueryOptions options = QueryOptions(
-        document: gql("query user { currentUser { id } }"), variables: {});
+        document: gql(query), variables: {});
     var result = await client.query(options);
 
     if (result.data == null) {
       return;
     }
 
+    upcomingTournaments = [];
+    for (var tournament in result.data!['currentUser']['tournaments']['nodes']) {
+      // Create tournament object to begin with
+      var tournamentObj = Tournament(tournament['id'], tournament['name'], tournament['city']);
+      // Loop over events
+      for (var event in tournament['events']) {
+        // Create a videogame for this event
+        // TODO: Reuse videogame objects
+        var videogame = VideoGame(event['videogame']['id'], event['videogame']['name']);
+
+        // Create event
+        var eventObj = Event(event['id'], event['name'], videogame, DateTime.fromMillisecondsSinceEpoch(event['startAt'] * 1000));
+        eventObj.tournament = tournamentObj;
+        tournamentObj.events.add(eventObj);
+      }
+      upcomingTournaments.add(tournamentObj);
+    }
+    notifyListeners();
+    
+    return;
+
+/*
     var userData = result.data!['currentUser'];
 
     // Get all the tournaments associated with this user
     // TODO: Is this previous, past, or both tournaments?
     // TODO: Pagination
-    var query =
-        r'query user($userId: ID!) { user(id: $userId) { id, events { nodes { id, name, startAt, state, tournament{ id, addrState, city, countryCode, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType } } } } }';
+    query =
+        r'query user($userId: ID!) { user(id: $userId) { id, events { nodes { id, name, startAt, state, tournament{ id, addrState, city, countryCode, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType }, videogame { id, name, displayName } } } } }';
     options = QueryOptions(
         document: gql(query), variables: {'userId': userData['id']});
     result = await client.query(options);
 
     // Begin by clearing our existing tournaments (but don't notify yet, since we don't want the UI to bug out!)
-    registeredTournaments = [];
+    registeredEvents = [];
 
     // Loop over our events to create a list of tournaments
     // TOOD: We really want most screens to show events, not just tournaments, since they're the unit we care about most
     for (var event in result.data!['user']['events']['nodes']) {
-      print("processing event");
+      debugPrint("processing event");
+
+      // Begin by creating a new VideoGame object
+      // TODO: We should share videogame objects between events
+      var videogame = VideoGame(
+        event['videogame']['id'],
+        event['videogame']['name'],
+      );
+
       // TODO: Find a real placeholder image
       var imageURL =
           "https://images.start.gg/images/tournament/599117/image-00444799c9badea9a5e1ad6a1e6aae20-optimized.png"; // Placeholder
@@ -124,12 +153,15 @@ class MyAppState extends ChangeNotifier {
         }
       }
       var tournament = Tournament(
-          event['tournament']['id'], event['tournament']['name'], imageURL);
-      registeredTournaments.add(tournament);
+          event['tournament']['id'], event['tournament']['name'], imageURL, event['tournament']['city']);
+      
+      var eventObj = Event(event['id'], event['name'], videogame, DateTime.fromMillisecondsSinceEpoch(event['startAt'] * 1000), tournament);
+      registeredEvents.add(eventObj);
     }
 
     notifyListeners();
-    print("graphql completed");
+    debugPrint("graphql completed");
+    */
   }
 
   void configureOauth() {
@@ -169,6 +201,8 @@ class MyAppState extends ChangeNotifier {
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -191,8 +225,8 @@ class _MyHomePageState extends State<MyHomePage> {
       return Scaffold(
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            CircularProgressIndicator(),
-            Padding(
+            const CircularProgressIndicator(),
+            const Padding(
               padding: EdgeInsets.all(8.0),
             ),
             Text(loadingReason),
@@ -204,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = TournamentPage();
+        page = const TournamentPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -218,37 +252,31 @@ class _MyHomePageState extends State<MyHomePage> {
               selectedIndex = index;
             });
           },
-          indicatorColor: Colors.amber[800],
           selectedIndex: selectedIndex,
           destinations: const <Widget>[
             NavigationDestination(
               icon: Icon(Icons.sports_esports),
-              label: 'Active Events',
+              label: 'Events',
             ),
             NavigationDestination(
               icon: Icon(Icons.history),
-              label: 'Past Events',
+              label: 'History',
             ),
             NavigationDestination(
               icon: Icon(Icons.search),
-              label: 'Find an Event',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.account_circle),
-              label: 'Account',
+              label: 'Find',
             ),
           ],
         ),
-        body: Container(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          child: SafeArea(child: page),
-        ),
+        body: SafeArea(child: page),
       );
     });
   }
 }
 
 class TournamentPage extends StatelessWidget {
+  const TournamentPage({super.key});
+
 
   
   @override
@@ -256,32 +284,42 @@ class TournamentPage extends StatelessWidget {
     var appState = context.watch<MyAppState>();
     final theme = Theme.of(context);
 
-    final headerStyle = theme.textTheme.labelMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
-
     // TODO: There is image popin even with the transparent image used here. Fix this.
 
-    return SafeArea(
-        minimum: const EdgeInsets.all(16.0),
-        child: Column(
+    return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Events', style: headerStyle),
-            SizedBox(height: 10),
+            Padding(
+              padding: EdgeInsets.only(left: 16.0, top: 8.0),
+              child: Text('Tournaments', style: theme.textTheme.labelMedium),
+            ),
+            const SizedBox(height: 10),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: appState.updateTournamentsForReal,
                 child: ListView.builder(
-                    itemCount: appState.registeredTournaments.length,
+                    itemCount: appState.upcomingTournaments.length,
                     itemBuilder: (BuildContext context, int i) {
                       return ListTile(
                         leading: FadeInImage.memoryNetwork(
                           placeholder: kTransparentImage,
-                          image: appState.registeredTournaments[i].imageURL,
+                          image: appState.upcomingTournaments[i].imageURL ?? 'https://images.start.gg/images/tournament/599117/image-00444799c9badea9a5e1ad6a1e6aae20-optimized.png',
                         ),
-                        title: Text(appState.registeredTournaments[i].name),
-                        subtitle: Text('SSBU\nDate\nLocation'),
+                        title: Text(
+                          appState.upcomingTournaments[i].name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Column(
+                          children: [
+                            Row(children: [Text(appState.upcomingTournaments[i].name)]),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                              Text(DateFormat('yyyy-MM-dd – kk:mm').format(DateTime(2002))),
+                              Text(appState.upcomingTournaments[i].city ?? ''),
+                            ]),
+                        ]),
                         isThreeLine: true,
                         minLeadingWidth: 0,
                       );
@@ -289,6 +327,6 @@ class TournamentPage extends StatelessWidget {
               ),
             ),
           ],
-        ));
+        );
   }
 }
