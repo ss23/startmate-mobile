@@ -1,10 +1,14 @@
+
+// https://developer.start.gg/reference/videogame.doc
 class VideoGame {
   int id;
   String? displayName;
   String name;
   String? slug;
 
-  VideoGame(this.id, this.name);
+  String? imageURL;
+
+  VideoGame(this.id, this.name, this.imageURL);
 
   /*
   # All characters for this videogame

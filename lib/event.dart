@@ -31,7 +31,7 @@ class Event {
   bool? useEventSeeds;
   VideoGame videogame;
 
-  Event(this.id, this.name, this.videogame, this.startAt);
+  Event(this.id, this.name, this.videogame, this.startAt, this.numEntrants);
 
   /*
     # The entrants that belong to an event, paginated by filter criteria

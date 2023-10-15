@@ -29,7 +29,7 @@ class Tournament {
   String? rules;
   String? shortSlug;
   String? slug;
-  DateTime? startAt;
+  DateTime startAt;
   int? state; // ActivityState::CREATED, ActivityState::ACTIVE, ActivityState::COMPLETED
   DateTime? teamCreationClosesAt;
   String? timezone;
@@ -43,7 +43,7 @@ class Tournament {
 
   List<Event> events = <Event>[];
 
-  Tournament(this.id, this.name, this.city);
+  Tournament(this.id, this.name, this.city, this.startAt);
  /*
   events(limit: Int, filter: EventFilter): [Event]
   # Arguments
