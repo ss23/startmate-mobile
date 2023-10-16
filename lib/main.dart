@@ -129,45 +129,44 @@ class MyAppState extends ChangeNotifier {
 
   void updateAccessToken() async {
     //try {
-      // Populate the currentUserId at the same time, which verifies our token is working
+    // Populate the currentUserId at the same time, which verifies our token is working
 
-      var token = await oauth2Helper.getToken();
-      if (token != null && token.accessToken != null) {
-        accessToken = token.accessToken!;
-        final HttpLink httpLink = HttpLink(
-          'https://api.start.gg/gql/alpha',
-        );
+    var token = await oauth2Helper.getToken();
+    if (token != null && token.accessToken != null) {
+      accessToken = token.accessToken!;
+      final HttpLink httpLink = HttpLink(
+        'https://api.start.gg/gql/alpha',
+      );
 
-        final AuthLink authLink = AuthLink(
-          getToken: () async => 'Bearer $accessToken',
-        );
-        final Link link = authLink.concat(httpLink);
+      final AuthLink authLink = AuthLink(
+        getToken: () async => 'Bearer $accessToken',
+      );
+      final Link link = authLink.concat(httpLink);
 
-        GraphQLClient client = GraphQLClient(
-          link: link,
-          // The default store is the InMemoryStore, which does NOT persist to disk
-          cache: GraphQLCache(),
-        );
+      GraphQLClient client = GraphQLClient(
+        link: link,
+        // The default store is the InMemoryStore, which does NOT persist to disk
+        cache: GraphQLCache(),
+      );
 
-        // One query to select all the information we need about upcoming events, etc
-        // TODO: Pagination
-        var query =
-            r'query user { currentUser { id, name, images (type: "profile") { url } } }';
-        QueryOptions options = QueryOptions(document: gql(query), variables: {});
-        var result = await client.query(options);
+      // One query to select all the information we need about upcoming events, etc
+      // TODO: Pagination
+      var query = r'query user { currentUser { id, name, images (type: "profile") { url } } }';
+      QueryOptions options = QueryOptions(document: gql(query), variables: {});
+      var result = await client.query(options);
 
-        if (result.data == null) {
-          return;
-        }
-        String? profileURL;
-        if (result.data!['currentUser']['images'].length > 0) {
-          profileURL = result.data!['currentUser']['images'][0]['url'];
-        }
-        currentUser = User(result.data!['currentUser']['id'], result.data!['currentUser']['name'], profileURL);
-        notifyListeners();
+      if (result.data == null) {
+        return;
       }
+      String? profileURL;
+      if (result.data!['currentUser']['images'].length > 0) {
+        profileURL = result.data!['currentUser']['images'][0]['url'];
+      }
+      currentUser = User(result.data!['currentUser']['id'], result.data!['currentUser']['name'], profileURL);
+      notifyListeners();
+    }
     //} catch (ex) {
-      // TODO: Notify the user authentication failed and offer to attempt again
+    // TODO: Notify the user authentication failed and offer to attempt again
     //}
   }
 
@@ -361,15 +360,19 @@ class TournamentPage extends StatelessWidget {
                                                     style: theme.textTheme.headlineSmall,
                                                   ),
                                                   // TODO: Use a different icon/interaction if we haven't registered for this event
-                                                  if (appState.currentUser!.upcomingEvents.contains(appState.upcomingTournaments[i].events[j].id))
-                                                    Icon(Icons.check_circle_outline, color: Colors.green)
+                                                  if (appState.currentUser!.upcomingEvents.contains(appState.upcomingTournaments[i].events[j].id)) Icon(Icons.check_circle_outline, color: Colors.green)
                                                 ],
                                               ),
                                               Text(appState.upcomingTournaments[i].events[j].videogame.name),
                                               Text('${appState.upcomingTournaments[i].events[j].numEntrants} entrants'),
                                               FilledButton(
                                                 // TODO: Take us to the bracket view page
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(builder: (context) => EventBracketPage(event: appState.upcomingTournaments[i].events[j])),
+                                                  );
+                                                },
                                                 child: Text("Bracket"),
                                               ),
                                             ],
@@ -390,6 +393,29 @@ class TournamentPage extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class EventBracketPage extends StatelessWidget {
+  const EventBracketPage({super.key, required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(event.name),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Go back!'),
+        ),
+      ),
     );
   }
 }
