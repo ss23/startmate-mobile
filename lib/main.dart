@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oauth2_client/oauth2_client.dart';
 import 'package:provider/provider.dart';
+import 'package:start_gg_app/bracket.dart';
 import 'package:start_gg_app/event.dart';
 import 'package:start_gg_app/tournament.dart';
 import 'package:oauth2_client/oauth2_helper.dart';
@@ -238,10 +239,13 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.history),
               label: 'History',
             ),
+            /*
+            TODO: Implement the find page
             NavigationDestination(
               icon: Icon(Icons.search),
               label: 'Find',
             ),
+            */
           ],
         ),
         body: SafeArea(child: page),
@@ -370,7 +374,7 @@ class TournamentPage extends StatelessWidget {
                                                 onPressed: () {
                                                   Navigator.push(
                                                     context,
-                                                    MaterialPageRoute(builder: (context) => EventBracketPage(event: appState.upcomingTournaments[i].events[j])),
+                                                    MaterialPageRoute(builder: (context) => EventBracketPage(event: appState.upcomingTournaments[i].events[j], appState: appState)),
                                                   );
                                                 },
                                                 child: Text("Bracket"),
@@ -393,29 +397,6 @@ class TournamentPage extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class EventBracketPage extends StatelessWidget {
-  const EventBracketPage({super.key, required this.event});
-
-  final Event event;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(event.name),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Go back!'),
-        ),
-      ),
     );
   }
 }
