@@ -279,7 +279,7 @@ class TournamentPage extends StatelessWidget {
                 itemCount: appState.upcomingTournaments.length,
                 itemBuilder: (BuildContext context, int i) {
                   return Padding(
-                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
                     child: Card(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
