@@ -10,9 +10,16 @@ import 'package:start_gg_app/user.dart';
 import 'package:start_gg_app/videogame.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+Future<void> _launchUrl(_url) async {
+  if (!await launchUrl(_url)) {
+    throw Exception('Could not launch $_url');
+  }
 }
 
 class StartGGOAuth2Client extends OAuth2Client {
@@ -83,7 +90,7 @@ class MyAppState extends ChangeNotifier {
     // One query to select all the information we need about upcoming events, etc
     // TODO: Pagination
     var query =
-        r'query user($userId: ID!) { currentUser { id, tournaments(query: { filter: { upcoming: true, } } ) { nodes { id, addrState, city, countryCode, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, userEntrant(userId: $userId) { id } videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
+        r'query user($userId: ID!) { currentUser { id, tournaments(query: { filter: { upcoming: true, } } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, userEntrant(userId: $userId) { id } videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
     QueryOptions options = QueryOptions(document: gql(query), variables: {'userId': currentUser!.id});
     var result = await client.query(options);
 
@@ -95,6 +102,7 @@ class MyAppState extends ChangeNotifier {
     for (var tournament in result.data!['currentUser']['tournaments']['nodes']) {
       // Create tournament object to begin with
       var tournamentObj = Tournament(tournament['id'], tournament['name'], tournament['city'], DateTime.fromMillisecondsSinceEpoch(tournament['startAt'] * 1000));
+      tournamentObj.slug = tournament['slug'];
       // Loop over events
       for (var event in tournament['events']) {
         // Create a videogame for this event
@@ -103,6 +111,7 @@ class MyAppState extends ChangeNotifier {
 
         // Create event
         var eventObj = Event(event['id'], event['name'], videogame, DateTime.fromMillisecondsSinceEpoch(event['startAt'] * 1000), event['numEntrants']);
+        eventObj.slug = event['slug'];
         eventObj.tournament = tournamentObj;
         tournamentObj.events.add(eventObj);
 
@@ -280,116 +289,129 @@ class TournamentPage extends StatelessWidget {
                 itemBuilder: (BuildContext context, int i) {
                   return Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
-                    child: Card(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8.0),
-                              topRight: Radius.circular(8.0),
-                            ),
-                            child: Container(
-                              height: 60,
-                              child: FittedBox(
-                                //alignment: Alignment.topCenter,
-                                fit: BoxFit.fitWidth,
-                                child: FadeInImage.memoryNetwork(
-                                  placeholder: kTransparentImage,
-                                  image: appState.upcomingTournaments[i].imageURL ?? 'https://images.start.gg/images/tournament/599117/image-a8543c0cc170271d6caf8df258650fec-optimized.png',
+                    child: GestureDetector(
+                      onTap: () {
+                        print("clicked tournament");
+                        _launchUrl(Uri.parse('https://www.start.gg/${appState.upcomingTournaments[i].slug}'));
+                      },
+                      child: Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(8.0),
+                                topRight: Radius.circular(8.0),
+                              ),
+                              child: Container(
+                                height: 60,
+                                child: FittedBox(
+                                  //alignment: Alignment.topCenter,
+                                  fit: BoxFit.fitWidth,
+                                  child: FadeInImage.memoryNetwork(
+                                    placeholder: kTransparentImage,
+                                    image: appState.upcomingTournaments[i].imageURL ?? 'https://images.start.gg/images/tournament/599117/image-a8543c0cc170271d6caf8df258650fec-optimized.png',
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    appState.upcomingTournaments[i].name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.headlineMedium,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      appState.upcomingTournaments[i].name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: theme.textTheme.headlineMedium,
+                                    ),
                                   ),
-                                ),
-                                Icon(Icons.more_vert)
-                              ],
+                                  Icon(Icons.more_vert)
+                                ],
+                              ),
                             ),
-                          ),
-                          Padding(
-                              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.calendar_month),
-                                  Text(DateFormat('yyyy-MM-dd – kk:mm').format(appState.upcomingTournaments[i].startAt ?? DateTime(0000))),
-                                ],
-                              )),
-                          Padding(
-                              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.location_on),
-                                  Text(appState.upcomingTournaments[i].city),
-                                ],
-                              )),
-                          Divider(),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
-                            child: Column(children: [
-                              for (int j = 0; j < appState.upcomingTournaments[i].events.length; j++)
-                                Column(
+                            Padding(
+                                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                child: Row(
                                   children: [
-                                    Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                      Container(
-                                        height: 120,
-                                        child: FadeInImage.memoryNetwork(
-                                          placeholder: kTransparentImage,
-                                          image: appState.upcomingTournaments[i].events[j].videogame.imageURL ??
-                                              'https://images.start.gg/images/videogame/9352/image-652433aa40f80e55d076647313d6bb14-optimized.jpg',
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: EdgeInsets.only(left: 8.0),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    Icon(Icons.calendar_month),
+                                    Text(DateFormat('yyyy-MM-dd – kk:mm').format(appState.upcomingTournaments[i].startAt ?? DateTime(0000))),
+                                  ],
+                                )),
+                            Padding(
+                                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.location_on),
+                                    Text(appState.upcomingTournaments[i].city),
+                                  ],
+                                )),
+                            Divider(),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
+                              child: Column(children: [
+                                for (int j = 0; j < appState.upcomingTournaments[i].events.length; j++)
+                                  GestureDetector(
+                                    onTap: () {
+                                      _launchUrl(Uri.parse('https://www.start.gg/${appState.upcomingTournaments[i].events[j].slug}'));
+                                      print("clicked event: ${appState.upcomingTournaments[i].events[j].slug}");
+                                    },
+                                    child: Column(
+                                      children: [
+                                        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                          Container(
+                                            height: 120,
+                                            child: FadeInImage.memoryNetwork(
+                                              placeholder: kTransparentImage,
+                                              image: appState.upcomingTournaments[i].events[j].videogame.imageURL ??
+                                                  'https://images.start.gg/images/videogame/9352/image-652433aa40f80e55d076647313d6bb14-optimized.jpg',
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Padding(
+                                              padding: EdgeInsets.only(left: 8.0),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    appState.upcomingTournaments[i].events[j].name,
-                                                    style: theme.textTheme.headlineSmall,
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        appState.upcomingTournaments[i].events[j].name,
+                                                        style: theme.textTheme.headlineSmall,
+                                                      ),
+                                                      // TODO: Use a different icon/interaction if we haven't registered for this event
+                                                      if (appState.currentUser!.upcomingEvents.contains(appState.upcomingTournaments[i].events[j].id))
+                                                        Icon(Icons.check_circle_outline, color: Colors.green)
+                                                    ],
                                                   ),
-                                                  // TODO: Use a different icon/interaction if we haven't registered for this event
-                                                  if (appState.currentUser!.upcomingEvents.contains(appState.upcomingTournaments[i].events[j].id)) Icon(Icons.check_circle_outline, color: Colors.green)
+                                                  Text(appState.upcomingTournaments[i].events[j].videogame.name),
+                                                  Text('${appState.upcomingTournaments[i].events[j].numEntrants} entrants'),
+                                                  FilledButton(
+                                                    // TODO: Take us to the bracket view page
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(builder: (context) => EventBracketPage(event: appState.upcomingTournaments[i].events[j], appState: appState)),
+                                                      );
+                                                    },
+                                                    child: Text("Bracket"),
+                                                  ),
                                                 ],
                                               ),
-                                              Text(appState.upcomingTournaments[i].events[j].videogame.name),
-                                              Text('${appState.upcomingTournaments[i].events[j].numEntrants} entrants'),
-                                              FilledButton(
-                                                // TODO: Take us to the bracket view page
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(builder: (context) => EventBracketPage(event: appState.upcomingTournaments[i].events[j], appState: appState)),
-                                                  );
-                                                },
-                                                child: Text("Bracket"),
-                                              ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    ]),
-                                    if (j != (appState.upcomingTournaments[i].events.length - 1)) Divider()
-                                  ],
-                                ),
-                            ]),
-                          ),
-                        ],
+                                        ]),
+                                        if (j != (appState.upcomingTournaments[i].events.length - 1)) Divider()
+                                      ],
+                                    ),
+                                  ),
+                              ]),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
