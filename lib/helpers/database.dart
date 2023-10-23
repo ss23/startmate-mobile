@@ -12,7 +12,8 @@ class DatabaseHelper {
     if (_database != null) return _database!;
 
     // TODO: This hard-coded database name should be managed through a configuration option
-    _database = await openDatabase(join(await getDatabasesPath(), 'data.db'),
+    _database = await openDatabase(
+      join(await getDatabasesPath(), 'data.db'),
       onCreate: (db, version) {
         // TODO: Create tables and define the schema
       },

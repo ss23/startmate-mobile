@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:logging/logging.dart';
 import 'package:start_gg_app/event.dart';
-import 'package:start_gg_app/screens/monolith.dart';
+import 'package:start_gg_app/controllers/appstate_controller.dart';
 import 'package:start_gg_app/phase.dart';
 import 'package:start_gg_app/phasegroup.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,7 @@ class EventBracketPage extends StatefulWidget {
   const EventBracketPage({super.key, required this.event, required this.appState});
 
   final Event event;
-  final MyAppState appState;
+  final AppStateController appState;
 
   @override
   State<EventBracketPage> createState() => _EventBracketPageState();
@@ -19,6 +20,7 @@ class EventBracketPage extends StatefulWidget {
 
 class _EventBracketPageState extends State<EventBracketPage> {
   var phases = <Phase>[];
+  final log = Logger("EventBracketPage");
 
   @override
   void initState() {
@@ -59,7 +61,8 @@ class _EventBracketPageState extends State<EventBracketPage> {
     var result = await client.query(options);
 
     if (result.data == null) {
-      print("No results found, or null, werid");
+      log.warning("Unable to fetch event data");
+      log.info(result);
       return;
     }
 
@@ -132,9 +135,6 @@ class PhasePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
-    //return Center(child: Text("asdfasdfasdf"));
     return Column(children: [
       DefaultTabController(
         initialIndex: 0,
@@ -163,6 +163,7 @@ class SetPage extends StatefulWidget {
 
 class _SetPageState extends State<SetPage> {
   List<GGSet>? sets;
+  Logger log = Logger("SetPage");
 
   @override
   void initState() {
@@ -177,7 +178,7 @@ class _SetPageState extends State<SetPage> {
   }
 
   Future<void> getSetData() async {
-    var appState = context.watch<MyAppState>();
+    var appState = context.watch<AppStateController>();
 
     // We need to download all of the bracket data
     final HttpLink httpLink = HttpLink(
@@ -205,13 +206,14 @@ class _SetPageState extends State<SetPage> {
     var result = await client.query(options);
 
     if (result.data == null) {
-      print("No results found, or null, werid");
+      log.warning("Unable to fetch set games");
+      log.info(result);
       return;
     }
 
     if (result.data!['phaseGroup']['sets']['pageInfo']['totalPages'] > 1) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not fetch all bracket data! File a bug')));
-      print("Warning! We are not getting all of the data! Fix me!!!!");
+      log.warning("Did not fetch enough data due to pagination issues");
     }
 
     setState(() {

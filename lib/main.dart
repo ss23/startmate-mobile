@@ -4,7 +4,7 @@ import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:start_gg_app/helpers/oauth.dart';
 import 'package:start_gg_app/screens/base.dart';
-import 'package:start_gg_app/screens/monolith.dart';
+import 'package:start_gg_app/controllers/appstate_controller.dart';
 
 void main() {
   // Configure logging
@@ -16,7 +16,7 @@ void main() {
 
   runApp(MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => MyAppState()),
+        ChangeNotifierProvider(create: (context) => AppStateController()),
         ChangeNotifierProvider(create: (context) => OAuthToken()),
       ],
       child: MaterialApp(

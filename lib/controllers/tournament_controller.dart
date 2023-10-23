@@ -3,6 +3,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:start_gg_app/event.dart';
+import 'package:start_gg_app/helpers/graphql.dart';
 import 'package:start_gg_app/helpers/oauth.dart';
 import 'package:start_gg_app/tournament.dart';
 import 'package:start_gg_app/user.dart';
@@ -23,7 +24,9 @@ class TournamentController extends ChangeNotifier {
   String? sortBy;
   final log = Logger('TournamentController');
 
-  TournamentController({required this.filter, this.sortBy});
+  TournamentController({required context, required this.filter, this.sortBy}) {
+    fetch(context);
+  }
 
   List<Tournament> data() {
     return _data;
@@ -31,7 +34,10 @@ class TournamentController extends ChangeNotifier {
 
   // TODO: Support paginated results with lazy loading!
   int get length => _data.length;
-  Tournament operator [](int index) => _data[index];
+
+  Tournament operator [](int index) {
+    return _data[index];
+  }
 
   void fetch(BuildContext context) async {
     log.fine("Fetching tournament data");
@@ -42,20 +48,8 @@ class TournamentController extends ChangeNotifier {
     final oauth = Provider.of<OAuthToken>(context, listen: false);
     final accessToken = oauth.client!.credentials.accessToken;
 
-    final HttpLink httpLink = HttpLink(
-      'https://api.start.gg/gql/alpha',
-    );
-
-    final AuthLink authLink = AuthLink(
-      getToken: () async => 'Bearer $accessToken',
-    );
-    final Link link = authLink.concat(httpLink);
-
-    GraphQLClient client = GraphQLClient(
-      link: link,
-      // The default store is the InMemoryStore, which does NOT persist to disk
-      cache: GraphQLCache(),
-    );
+    GraphQLHelper.accessToken = accessToken;
+    final client = await GraphQLHelper().client;
 
     // Begin by getting our clients ID
     var query = r'query user { currentUser { id, name, images (type: "profile") { url } } }';
@@ -78,7 +72,7 @@ class TournamentController extends ChangeNotifier {
     // TODO: Pagination
     query =
         r'query user($userId: ID!, $filter: UserTournamentsPaginationFilter!) { currentUser { id, tournaments(query: { filter: $filter } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, userEntrant(userId: $userId) { id } videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
-    options = QueryOptions(document: gql(query), variables: {'userId': currentUser!.id, "filter": filter});
+    options = QueryOptions(document: gql(query), variables: {'userId': currentUser.id, "filter": filter});
     result = await client.query(options);
 
     if (result.data == null) {
@@ -86,8 +80,6 @@ class TournamentController extends ChangeNotifier {
       log.info(result);
       return;
     }
-
-    print(result.data);
 
     _data = [];
     for (var tournament in result.data!['currentUser']['tournaments']['nodes']) {
@@ -108,13 +100,13 @@ class TournamentController extends ChangeNotifier {
 
         // If we are participating, add it to our participating events list so we can later determine if we're registered for this event
         if (event['userEntrant'] != null) {
-          currentUser!.upcomingEvents.add(event['id']);
+          currentUser.upcomingEvents.add(event['id']);
         }
       }
       _data.add(tournamentObj);
     }
     state = DataState.fetched;
-    print(_data);
     notifyListeners();
+    log.fine("Tournament data fetched successfully");
   }
 }

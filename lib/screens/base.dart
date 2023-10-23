@@ -65,13 +65,11 @@ class _BasePageState extends State<BasePage> {
               icon: Icon(Icons.history),
               label: 'History',
             ),
-            /*
-            TODO: Implement the find page
+            // TODO: Implement the Find page
             NavigationDestination(
               icon: Icon(Icons.search),
               label: 'Find',
             ),
-            */
           ],
         ),
         body: SafeArea(child: page),

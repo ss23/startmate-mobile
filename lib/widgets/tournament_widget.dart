@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:start_gg_app/bracket.dart';
 import 'package:start_gg_app/helpers/url.dart';
-import 'package:start_gg_app/screens/monolith.dart';
+import 'package:start_gg_app/controllers/appstate_controller.dart';
 import 'package:start_gg_app/tournament.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -14,9 +14,9 @@ class TournamentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    var appState = context.watch<AppStateController>();
     final theme = Theme.of(context);
-    
+
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
       child: GestureDetector(
@@ -94,8 +94,7 @@ class TournamentWidget extends StatelessWidget {
                               height: 120,
                               child: FadeInImage.memoryNetwork(
                                 placeholder: kTransparentImage,
-                                image: tournament.events[j].videogame.imageURL ??
-                                    'https://images.start.gg/images/videogame/9352/image-652433aa40f80e55d076647313d6bb14-optimized.jpg',
+                                image: tournament.events[j].videogame.imageURL ?? 'https://images.start.gg/images/videogame/9352/image-652433aa40f80e55d076647313d6bb14-optimized.jpg',
                               ),
                             ),
                             Expanded(
