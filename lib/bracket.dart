@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:start_gg_app/event.dart';
-import 'package:start_gg_app/main.dart';
+import 'package:start_gg_app/screens/monolith.dart';
 import 'package:start_gg_app/phase.dart';
 import 'package:start_gg_app/phasegroup.dart';
 import 'package:provider/provider.dart';
@@ -79,12 +79,12 @@ class _EventBracketPageState extends State<EventBracketPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (phases.length == 0) {
-      return Scaffold(
+    if (phases.isEmpty) {
+      return const Scaffold(
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const CircularProgressIndicator(),
-            const Padding(
+            CircularProgressIndicator(),
+            Padding(
               padding: EdgeInsets.all(8.0),
             ),
             Text("Loading bracket..."),
@@ -286,11 +286,11 @@ class _SetPageState extends State<SetPage> {
                               width: 200,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                border: Border.all(width: 1, color: Color(0xFFDDDDDD)),
+                                border: Border.all(width: 1, color: const Color(0xFFDDDDDD)),
                                 //borderRadius: BorderRadius.circular(3),
                               ),
-                              padding: EdgeInsets.only(left: 14.0, right: 8.0, top: 1.0, bottom: 1.0),
-                              child: Text("player 1sadf lkasndf laskfn asldfkn asldfkn asldfk n", overflow: TextOverflow.ellipsis),
+                              padding: const EdgeInsets.only(left: 14.0, right: 8.0, top: 1.0, bottom: 1.0),
+                              child: const Text("player 1sadf lkasndf laskfn asldfkn asldfkn asldfk n", overflow: TextOverflow.ellipsis),
                             ),
                             Container(
                               width: 200,
@@ -302,10 +302,10 @@ class _SetPageState extends State<SetPage> {
                                   bottom: BorderSide(width: 1, color: Color(0xFFDDDDDD)),
                                 ),
                               ),
-                              padding: EdgeInsets.only(left: 14.0, right: 8.0, top: 1.0, bottom: 1.0),
-                              child: Text("player 2", overflow: TextOverflow.ellipsis),
+                              padding: const EdgeInsets.only(left: 14.0, right: 8.0, top: 1.0, bottom: 1.0),
+                              child: const Text("player 2", overflow: TextOverflow.ellipsis),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                           ],
@@ -314,13 +314,13 @@ class _SetPageState extends State<SetPage> {
                       Padding(
                         padding: const EdgeInsets.only(top: 14.0),
                         child: Container(
-                            padding: EdgeInsets.only(left: 8.0, right: 18.0),
+                            padding: const EdgeInsets.only(left: 8.0, right: 18.0),
                             decoration: const BoxDecoration(
                               // TODO: This Border Radius looks silly, make it nicer (hard edges probably, more like an arrow)
                               borderRadius: BorderRadius.only(topRight: Radius.circular(24), bottomRight: Radius.circular(24)),
                               color: Colors.blue,
                             ),
-                            child: Text(winnersSetsByRound[i]![j].identifier!, style: theme.textTheme.labelLarge!.merge(TextStyle(color: Colors.white)))),
+                            child: Text(winnersSetsByRound[i]![j].identifier!, style: theme.textTheme.labelLarge!.merge(const TextStyle(color: Colors.white)))),
                       ),
                     ],
                   ),
@@ -336,11 +336,11 @@ class _SetPageState extends State<SetPage> {
                               width: 200,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                border: Border.all(width: 1, color: Color(0xFFDDDDDD)),
+                                border: Border.all(width: 1, color: const Color(0xFFDDDDDD)),
                                 //borderRadius: BorderRadius.circular(3),
                               ),
-                              padding: EdgeInsets.only(left: 14.0, right: 8.0, top: 1.0, bottom: 1.0),
-                              child: Text("player 1sadf lkasndf laskfn asldfkn asldfkn asldfk n", overflow: TextOverflow.ellipsis),
+                              padding: const EdgeInsets.only(left: 14.0, right: 8.0, top: 1.0, bottom: 1.0),
+                              child: const Text("player 1sadf lkasndf laskfn asldfkn asldfkn asldfk n", overflow: TextOverflow.ellipsis),
                             ),
                             Container(
                               width: 200,
@@ -352,10 +352,10 @@ class _SetPageState extends State<SetPage> {
                                   bottom: BorderSide(width: 1, color: Color(0xFFDDDDDD)),
                                 ),
                               ),
-                              padding: EdgeInsets.only(left: 14.0, right: 8.0, top: 1.0, bottom: 1.0),
-                              child: Text("player 2", overflow: TextOverflow.ellipsis),
+                              padding: const EdgeInsets.only(left: 14.0, right: 8.0, top: 1.0, bottom: 1.0),
+                              child: const Text("player 2", overflow: TextOverflow.ellipsis),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                           ],
@@ -364,13 +364,13 @@ class _SetPageState extends State<SetPage> {
                       Padding(
                         padding: const EdgeInsets.only(top: 14.0),
                         child: Container(
-                            padding: EdgeInsets.only(left: 8.0, right: 18.0),
+                            padding: const EdgeInsets.only(left: 8.0, right: 18.0),
                             decoration: const BoxDecoration(
                               // TODO: This Border Radius looks silly, make it nicer (hard edges probably, more like an arrow)
                               borderRadius: BorderRadius.only(topRight: Radius.circular(24), bottomRight: Radius.circular(24)),
                               color: Colors.blue,
                             ),
-                            child: Text(winnersSetsByRound[i]![j].identifier!, style: theme.textTheme.labelLarge!.merge(TextStyle(color: Colors.white)))),
+                            child: Text(winnersSetsByRound[i]![j].identifier!, style: theme.textTheme.labelLarge!.merge(const TextStyle(color: Colors.white)))),
                       ),
                     ],
                   )
