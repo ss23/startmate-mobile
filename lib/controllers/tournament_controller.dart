@@ -57,6 +57,16 @@ class TournamentController extends ChangeNotifier {
     var result = await client.query(options);
 
     if (result.data == null) {
+      if (result.hasException && result.exception!.linkException!.runtimeType == HttpLinkServerException) {
+        final exception = result.exception!.linkException! as HttpLinkServerException;
+        if (exception.parsedResponse!.response["message"] == "Invalid authentication token") {
+          log.warning("Invalid authentication token. Forcing reauthentication");
+          oauth.reauthenticate();
+          // Clear GraphQL cache too
+          client.resetStore(refetchQueries: false);
+          return;
+        }
+      }
       log.warning("Unable to fetch user data");
       log.info(result);
       return;

@@ -111,4 +111,12 @@ class OAuthToken extends ChangeNotifier {
       }
     });
   }
+
+  reauthenticate() async {
+    // Force the user to reauthenticate, such as in the event of an invalid token error
+    client = null;
+    grant = null;
+    needToAuthenticate = true;
+    notifyListeners();
+  }
 }
