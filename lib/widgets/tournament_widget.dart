@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:start_gg_app/bracket.dart';
 import 'package:start_gg_app/helpers/url.dart';
@@ -9,8 +10,9 @@ import 'package:transparent_image/transparent_image.dart';
 
 class TournamentWidget extends StatelessWidget {
   final Tournament tournament;
+  final Logger log = Logger("TournamentWidget");
 
-  const TournamentWidget({super.key, required this.tournament});
+  TournamentWidget({super.key, required this.tournament});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class TournamentWidget extends StatelessWidget {
       padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
       child: GestureDetector(
         onTap: () {
+          log.finer("Clicked tournament");
           urlLaunch(Uri.parse('https://www.start.gg/${tournament.slug}'));
         },
         child: Card(
@@ -83,13 +86,15 @@ class TournamentWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
                 child: Column(children: [
                   for (int j = 0; j < tournament.events.length; j++)
-                    GestureDetector(
+                    Column(
+                        children: [
+                          GestureDetector(
+                      behavior: HitTestBehavior.translucent,
                       onTap: () {
+                        log.finer("Clicked event");
                         urlLaunch(Uri.parse('https://www.start.gg/${tournament.events[j].slug}'));
                       },
-                      child: Column(
-                        children: [
-                          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                             SizedBox(
                               height: 120,
                               child: FadeInImage.memoryNetwork(
@@ -132,10 +137,10 @@ class TournamentWidget extends StatelessWidget {
                               ),
                             ),
                           ]),
+                          ),
                           if (j != (tournament.events.length - 1)) const Divider()
                         ],
                       ),
-                    ),
                 ]),
               ),
             ],
