@@ -11,7 +11,6 @@ class EventsPage extends StatelessWidget {
     final theme = Theme.of(context);
 
     // TODO: There is image popin even with the transparent image used here. Fix this.
-
     return ChangeNotifierProvider(
       create: (context) => TournamentController(context: context, filter: {"upcoming": true}),
       child: Consumer<TournamentController>(
@@ -24,31 +23,29 @@ class EventsPage extends StatelessWidget {
                 child: Text('Tournaments', style: theme.textTheme.labelMedium),
               ),
               const SizedBox(height: 10),
-              RefreshIndicator(
-                  onRefresh: () async {
-                    controller.fetch(context);
-                  },
-                  child: Column(
-                    children: [
-                      if (controller.state == DataState.fetching || controller.state == DataState.uninitialized) const Center(child: CircularProgressIndicator()),
-                      if ((controller.state == DataState.fetched || controller.state == DataState.endOfData) && controller.length == 0)
-                        const Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text("No upcoming events found. Register on start.gg and tournaments will show here"),
-                        ),
-                    ],
-                  )),
-              // TODO: There is a bug that prevents us putting all of this content inside a single RefreshIndicator. Investigate and fix.
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () async {
                     controller.fetch(context);
                   },
                   child: ListView.builder(
-                      itemCount: controller.length,
-                      itemBuilder: (BuildContext context, int i) {
-                        return TournamentWidget(tournament: controller[i]);
-                      }),
+                    itemCount: controller.length + 1,
+                    itemBuilder: (BuildContext context, int i) {
+                      if (i == 0) {
+                        if (controller.state == DataState.fetching || controller.state == DataState.uninitialized) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if ((controller.state == DataState.fetched || controller.state == DataState.endOfData) && controller.length == 0) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("No upcoming events found. Register on start.gg and tournaments will show here"),
+                          );
+                        } else {
+                          return Container(); // Empty placeholder for refreshing indicator.
+                        }
+                      }
+                      return TournamentWidget(tournament: controller[i - 1]);
+                    },
+                  ),
                 ),
               ),
             ],
