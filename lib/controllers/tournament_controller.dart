@@ -17,7 +17,7 @@ class TournamentController extends ChangeNotifier {
   String sortBy;
   final log = Logger('TournamentController');
 
-  TournamentController({required context, required this.filter, this.sortBy = "tournament.startAt asc"}) {
+  TournamentController({required context, required this.filter, this.sortBy = "tournament.startAt desc"}) {
     fetch(context);
   }
 
