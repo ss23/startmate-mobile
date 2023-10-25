@@ -4,7 +4,7 @@ import 'package:start_gg_app/event.dart';
 class Tournament {
   int id;
   String? addrState;
-  String city;
+  String? city;
   String? countryCode;
   DateTime? createdAt;
   String? currency;
@@ -40,10 +40,11 @@ class Tournament {
 
   // Not a field in the API
   String? imageURL;
+  String? locationDisplayName; // This comes from the public API (not documented)
 
   List<Event> events = <Event>[];
 
-  Tournament(this.id, this.name, this.city, this.startAt);
+  Tournament(this.id, this.name, this.startAt);
  /*
   events(limit: Int, filter: EventFilter): [Event]
   # Arguments

@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:start_gg_app/helpers/oauth.dart';
 import 'package:start_gg_app/screens/events.dart';
+import 'package:start_gg_app/screens/find.dart';
 import 'package:start_gg_app/screens/onboarding.dart';
 import 'package:start_gg_app/widgets/loading_widget.dart';
 
@@ -42,6 +43,11 @@ class _BasePageState extends State<BasePage> {
       case 0:
         page = const EventsPage();
         break;
+      case 1:
+        page = Container();
+      case 2:
+        page = const FindPage();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -65,7 +71,6 @@ class _BasePageState extends State<BasePage> {
               icon: Icon(Icons.history),
               label: 'History',
             ),
-            // TODO: Implement the Find page
             NavigationDestination(
               icon: Icon(Icons.search),
               label: 'Find',

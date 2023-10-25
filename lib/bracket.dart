@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:start_gg_app/event.dart';
-import 'package:start_gg_app/controllers/appstate_controller.dart';
+import 'package:start_gg_app/helpers/oauth.dart';
 import 'package:start_gg_app/phase.dart';
 import 'package:start_gg_app/phasegroup.dart';
 import 'package:provider/provider.dart';
 import 'package:start_gg_app/set.dart';
 
 class EventBracketPage extends StatefulWidget {
-  const EventBracketPage({super.key, required this.event, required this.appState});
+  const EventBracketPage({super.key, required this.event});
 
   final Event event;
-  final AppStateController appState;
 
   @override
   State<EventBracketPage> createState() => _EventBracketPageState();
@@ -37,13 +36,16 @@ class _EventBracketPageState extends State<EventBracketPage> {
   }
 
   Future<void> populateEventdata() async {
+    final oauth = Provider.of<OAuthToken>(context);
+    final accessToken = oauth.client!.credentials.accessToken;
+    
     // We need to download all of the bracket data
     final HttpLink httpLink = HttpLink(
       'https://api.start.gg/gql/alpha',
     );
 
     final AuthLink authLink = AuthLink(
-      getToken: () async => 'Bearer ${widget.appState.accessToken}',
+      getToken: () async => 'Bearer ${accessToken}',
     );
     final Link link = authLink.concat(httpLink);
 
@@ -178,7 +180,8 @@ class _SetPageState extends State<SetPage> {
   }
 
   Future<void> getSetData() async {
-    var appState = context.watch<AppStateController>();
+    final oauth = Provider.of<OAuthToken>(context);
+    final accessToken = oauth.client!.credentials.accessToken;
 
     // We need to download all of the bracket data
     final HttpLink httpLink = HttpLink(
@@ -186,7 +189,7 @@ class _SetPageState extends State<SetPage> {
     );
 
     final AuthLink authLink = AuthLink(
-      getToken: () async => 'Bearer ${appState.accessToken}',
+      getToken: () async => 'Bearer ${accessToken}',
     );
     final Link link = authLink.concat(httpLink);
 

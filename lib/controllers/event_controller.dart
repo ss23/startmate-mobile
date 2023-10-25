@@ -10,30 +10,30 @@ import 'package:start_gg_app/tournament.dart';
 import 'package:start_gg_app/user.dart';
 import 'package:start_gg_app/videogame.dart';
 
-class TournamentController extends ChangeNotifier {
-  List<Tournament> _data = [];
+class EventController extends ChangeNotifier {
+  List<Event> _data = [];
   DataState state = DataState.uninitialized;
   dynamic filter;
   String? sortBy;
-  final log = Logger('TournamentController');
+  final log = Logger('EventController');
 
-  TournamentController({required context, required this.filter, this.sortBy}) {
+  EventController({required context, this.filter, this.sortBy}) {
     fetch(context);
   }
 
-  List<Tournament> data() {
+  List<Event> get data {
     return _data;
   }
 
   // TODO: Support paginated results with lazy loading!
   int get length => _data.length;
 
-  Tournament operator [](int index) {
+  Event operator [](int index) {
     return _data[index];
   }
 
   void fetch(BuildContext context) async {
-    log.fine("Fetching tournament data");
+    log.fine("Fetching event data");
 
     state = DataState.fetching;
     // Using `watch` here might result in rebuilds we don't need
@@ -45,21 +45,12 @@ class TournamentController extends ChangeNotifier {
     final client = await GraphQLHelper().client;
 
     // Begin by getting our clients ID
+    // TODO: Migrate the collection of user data to another place and just let this access it, since lots of places will need to display information about the current user
     var query = r'query user { currentUser { id, name, images (type: "profile") { url } } }';
     QueryOptions options = QueryOptions(document: gql(query), variables: const {});
     var result = await client.query(options);
 
     if (result.data == null) {
-      if (result.hasException && result.exception!.linkException!.runtimeType == HttpLinkServerException) {
-        final exception = result.exception!.linkException! as HttpLinkServerException;
-        if (exception.parsedResponse!.response["message"] == "Invalid authentication token") {
-          log.warning("Invalid authentication token. Forcing reauthentication");
-          oauth.reauthenticate();
-          // Clear GraphQL cache too
-          client.resetStore(refetchQueries: false);
-          return;
-        }
-      }
       log.warning("Unable to fetch user data");
       log.info(result);
       return;
@@ -73,6 +64,7 @@ class TournamentController extends ChangeNotifier {
 
     // One query to select all the information we need about upcoming events, etc
     // TODO: Pagination
+
     query =
         r'query user($userId: ID!, $filter: UserTournamentsPaginationFilter!) { currentUser { id, tournaments(query: { filter: $filter } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, userEntrant(userId: $userId) { id } videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
     options = QueryOptions(document: gql(query), variables: {'userId': currentUser.id, "filter": filter});
@@ -85,35 +77,7 @@ class TournamentController extends ChangeNotifier {
     }
 
     _data = [];
-    for (var tournament in result.data!['currentUser']['tournaments']['nodes']) {
-      // Create tournament object to begin with
-      var tournamentObj = Tournament(tournament['id'], tournament['name'], DateTime.fromMillisecondsSinceEpoch(tournament['startAt'] * 1000));
-      tournamentObj.city = tournament['city'];
-      tournamentObj.slug = tournament['slug'];
-      // Loop over events
-      for (var event in tournament['events']) {
-        // Create a videogame for this event
-        // TODO: Reuse videogame objects
-        var videogame = VideoGame(event['videogame']['id'], event['videogame']['name'], event['videogame']['images'][0]['url']);
-
-        // Create event
-        var eventObj = Event(event['id'], event['name'], videogame, DateTime.fromMillisecondsSinceEpoch(event['startAt'] * 1000), event['numEntrants']);
-        eventObj.slug = event['slug'];
-        eventObj.tournament = tournamentObj;
-        tournamentObj.events.add(eventObj);
-
-        // If we are participating, add it to our participating events list so we can later determine if we're registered for this event
-        if (event['userEntrant'] != null) {
-          currentUser.upcomingEvents.add(event['id']);
-        }
-      }
-      // Loop over images
-      for (var image in tournament['images']) {
-        if (image['type'] == "banner") {
-          tournamentObj.imageURL = image['url'];
-        }
-      }
-      _data.add(tournamentObj);
+    for (var event in result.data!['currentUser']['tournaments']['nodes']) {
     }
     state = DataState.fetched;
     notifyListeners();
