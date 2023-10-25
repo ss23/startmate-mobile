@@ -14,10 +14,10 @@ class TournamentController extends ChangeNotifier {
   List<Tournament> _data = [];
   DataState state = DataState.uninitialized;
   dynamic filter;
-  String? sortBy;
+  String sortBy;
   final log = Logger('TournamentController');
 
-  TournamentController({required context, required this.filter, this.sortBy}) {
+  TournamentController({required context, required this.filter, this.sortBy = "tournament.startAt asc"}) {
     fetch(context);
   }
 
@@ -36,8 +36,6 @@ class TournamentController extends ChangeNotifier {
     log.fine("Fetching tournament data");
 
     state = DataState.fetching;
-    // Using `watch` here might result in rebuilds we don't need
-    // TODO: Should we do something other than `watch` here?
     final oauth = Provider.of<OAuthToken>(context, listen: false);
     final accessToken = oauth.client!.credentials.accessToken;
 
@@ -74,8 +72,8 @@ class TournamentController extends ChangeNotifier {
     // One query to select all the information we need about upcoming events, etc
     // TODO: Pagination
     query =
-        r'query user($userId: ID!, $filter: UserTournamentsPaginationFilter!) { currentUser { id, tournaments(query: { filter: $filter } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, userEntrant(userId: $userId) { id } videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
-    options = QueryOptions(document: gql(query), variables: {'userId': currentUser.id, "filter": filter});
+        r'query user($userId: ID!, $filter: UserTournamentsPaginationFilter!, $sortBy: String!) { currentUser { id, tournaments(query: { filter: $filter, sortBy: $sortBy } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, userEntrant(userId: $userId) { id } videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
+    options = QueryOptions(document: gql(query), variables: {'userId': currentUser.id, "filter": filter, "sortBy": sortBy});
     result = await client.query(options);
 
     if (result.data == null) {
