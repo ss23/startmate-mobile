@@ -49,10 +49,36 @@ class OAuthToken extends ChangeNotifier {
     if (exists) {
       log.fine("Retrieved saved credentials");
       var credentials = oauth2.Credentials.fromJson(await credentialsFile.readAsString());
-      client = oauth2.Client(credentials, identifier: identifier, secret: secret);
-      // TODO: How do we set "onCredentialsRefreshed" here to ensure refreshed credentials are saved appropriately?
-      notifyListeners();
-      return;
+      if (credentials.isExpired && credentials.canRefresh) {
+        log.fine("Refreshing expired credentials");
+        var candidateClient = oauth2.Client(credentials, identifier: identifier, secret: secret);
+        try {
+          await candidateClient.refreshCredentials();
+        } catch (e) {
+          log.warning("Failed to refresh credentials, despite having a valid refresh token");
+          log.warning(e);
+          // Any errors are this stage indicate we just need to start again with authentication
+          needToAuthenticate = true;
+          notifyListeners();
+          return;
+        }
+        // If we got here, it means we didn't have an error during the refresh, meaning the new credentials should be fine to use!
+        client = candidateClient;
+        notifyListeners();
+        // Finally, save these new credentials so they're available for next time
+        saveNewCredentials(client!.credentials);
+        return;
+      }
+
+      if (!credentials.isExpired) {
+        log.fine("Using saved credentials");
+        client = oauth2.Client(credentials, identifier: identifier, secret: secret);
+        // TODO: How do we set "onCredentialsRefreshed" here to ensure refreshed credentials are saved appropriately?
+        notifyListeners();
+        return;
+      }
+
+      log.fine("Saved credentials have expired: ${credentials.expiration}");
     }
 
     needToAuthenticate = true;
