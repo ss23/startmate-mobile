@@ -6,6 +6,7 @@ import 'package:start_gg_app/screens/followed_events.dart';
 import 'package:start_gg_app/screens/registered_events.dart';
 import 'package:start_gg_app/screens/find.dart';
 import 'package:start_gg_app/screens/onboarding.dart';
+import 'package:start_gg_app/widgets/followed_events_fab.dart';
 import 'package:start_gg_app/widgets/loading_widget.dart';
 
 class BasePage extends StatefulWidget {
@@ -40,12 +41,14 @@ class _BasePageState extends State<BasePage> {
     }
 
     Widget page;
+    Widget? fab;
     switch (selectedIndex) {
       case 0:
         page = const RegisteredEventsPage();
         break;
       case 1:
         page = const FollowedEventsPage();
+        fab = FollowedEventsFAB();
         break;
       case 2:
         page = Container();
@@ -85,6 +88,7 @@ class _BasePageState extends State<BasePage> {
           ],
         ),
         body: SafeArea(child: page),
+        floatingActionButton: fab, // May be null
       );
     });
   }

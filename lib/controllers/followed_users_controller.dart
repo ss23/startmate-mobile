@@ -12,8 +12,9 @@ class FollowedUsersController extends ChangeNotifier {
   List<FollowedUser> _data = [];
   DataState state = DataState.uninitialized;
   final log = Logger('FollowedUsersController');
+  Set<String> followedUsers = {"1000868", "854147"};
 
-  FollowedUsersController({ required BuildContext context }) {
+  FollowedUsersController({required BuildContext context}) {
     fetch(context);
   }
 
@@ -34,15 +35,13 @@ class FollowedUsersController extends ChangeNotifier {
     // TODO: Implement database storage of our userIds
     _data = [];
 
-    final userIds = ["1000868","854147"];
-
     final oauth = Provider.of<OAuthToken>(context, listen: false);
     final accessToken = oauth.client!.credentials.accessToken;
 
     GraphQLHelper.accessToken = accessToken;
     final client = await GraphQLHelper().client;
 
-    for (var userId in userIds) {
+    for (var userId in followedUsers) {
       var query = r'query user($userId: ID!) { user(id: $userId) { id name player { gamerTag } images(type: "profile") { id type url } } }';
       var options = QueryOptions(document: gql(query), variables: {'userId': userId});
       var result = await client.query(options);
@@ -81,5 +80,15 @@ class FollowedUsersController extends ChangeNotifier {
 
     state = DataState.fetched;
     notifyListeners();
+  }
+
+  void unfollowUser({required BuildContext context, required String id}) {
+    followedUsers.remove(id);
+    fetch(context);
+  }
+
+  void followUser({required BuildContext context, required String id}) {
+    followedUsers.add(id);
+    fetch(context);
   }
 }
