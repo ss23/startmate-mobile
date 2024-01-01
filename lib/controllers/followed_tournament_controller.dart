@@ -3,6 +3,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:start_gg_app/controllers/datastate.dart';
+import 'package:start_gg_app/controllers/followed_users_controller.dart';
 import 'package:start_gg_app/event.dart';
 import 'package:start_gg_app/helpers/graphql.dart';
 import 'package:start_gg_app/helpers/oauth.dart';
@@ -12,12 +13,11 @@ import 'package:start_gg_app/videogame.dart';
 class FollowedTournamentController extends ChangeNotifier {
   List<Tournament> _data = [];
   DataState state = DataState.uninitialized;
-  List<String> userIds;
-  String sortBy;
+  List<String> userIds = [];
   dynamic filter;
   final log = Logger('FollowedTournamentController');
 
-  FollowedTournamentController({required context, required this.userIds, required this.filter, this.sortBy = "tournament.startAt desc"}) {
+  FollowedTournamentController({required context, required this.filter}) {
     fetch(context);
   }
 
@@ -32,8 +32,21 @@ class FollowedTournamentController extends ChangeNotifier {
     return _data[index];
   }
 
+  void update(BuildContext context, FollowedUsersController followedUsersController) {
+    log.fine("Updated userIds");
+    userIds = followedUsersController.data().map((user) => user.startggId).toList();
+    fetch(context);
+  }
+
   void fetch(BuildContext context) async {
     log.fine("Fetching followed tournament data");
+
+    if (userIds.isEmpty) {
+      _data = [];
+      notifyListeners();
+      log.fine("No followed users");
+      return;
+    }
 
     state = DataState.fetching;
     final oauth = Provider.of<OAuthToken>(context, listen: false);
@@ -47,8 +60,8 @@ class FollowedTournamentController extends ChangeNotifier {
       // One query to select all the information we need about upcoming events, etc
       // TODO: Pagination
       var query =
-          r'query user($userId: ID!, $filter: UserTournamentsPaginationFilter!, $sortBy: String!) { user(id: $userId) { tournaments(query: { filter: $filter, sortBy: $sortBy } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
-      var options = QueryOptions(document: gql(query), variables: {'userId': userId, "filter": filter, "sortBy": sortBy});
+          r'query user($userId: ID!, $filter: UserTournamentsPaginationFilter!) { user(id: $userId) { tournaments(query: { filter: $filter } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
+      var options = QueryOptions(document: gql(query), variables: {'userId': userId, "filter": filter});
       var result = await client.query(options);
 
       if (result.data == null) {
@@ -79,6 +92,11 @@ class FollowedTournamentController extends ChangeNotifier {
       }
 
       for (var tournament in result.data!['user']['tournaments']['nodes']) {
+        // Perform deduplication here
+        if (_data.where((t) => t.id == tournament['id']).isNotEmpty) {
+          continue;
+        }
+
         // Create tournament object to begin with
         var tournamentObj = Tournament(tournament['id'], tournament['name'], DateTime.fromMillisecondsSinceEpoch(tournament['startAt'] * 1000));
         tournamentObj.city = tournament['city'];
@@ -106,6 +124,9 @@ class FollowedTournamentController extends ChangeNotifier {
         _data.add(tournamentObj);
       }
     }
+
+    // Sort the data
+    _data.sort((a, b) => a.startAt.compareTo(b.startAt));
 
     state = DataState.fetched;
     notifyListeners();

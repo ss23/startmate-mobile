@@ -74,7 +74,6 @@ class _BasePageState extends State<BasePage> {
               icon: Icon(Icons.groups),
               label: 'Followed',
             ),
-            // TODO: Implement the History page
             NavigationDestination(
               icon: Icon(Icons.history),
               label: 'History',
