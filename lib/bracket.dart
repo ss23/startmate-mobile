@@ -45,7 +45,7 @@ class _EventBracketPageState extends State<EventBracketPage> {
     );
 
     final AuthLink authLink = AuthLink(
-      getToken: () async => 'Bearer ${accessToken}',
+      getToken: () async => 'Bearer $accessToken',
     );
     final Link link = authLink.concat(httpLink);
 
@@ -189,7 +189,7 @@ class _SetPageState extends State<SetPage> {
     );
 
     final AuthLink authLink = AuthLink(
-      getToken: () async => 'Bearer ${accessToken}',
+      getToken: () async => 'Bearer $accessToken',
     );
     final Link link = authLink.concat(httpLink);
 

@@ -4,8 +4,8 @@ import 'package:start_gg_app/controllers/datastate.dart';
 import 'package:start_gg_app/controllers/tournament_controller.dart';
 import 'package:start_gg_app/widgets/tournament_widget.dart';
 
-class EventsPage extends StatelessWidget {
-  const EventsPage({super.key});
+class RegisteredEventsPage extends StatelessWidget {
+  const RegisteredEventsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class EventsPage extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 16.0, top: 8.0),
-                child: Text('Tournaments', style: theme.textTheme.labelMedium),
+                child: Text('Registered Tournaments', style: theme.textTheme.labelMedium),
               ),
               const SizedBox(height: 10),
               Expanded(
@@ -38,7 +38,7 @@ class EventsPage extends StatelessWidget {
                         } else if ((controller.state == DataState.fetched || controller.state == DataState.endOfData) && controller.length == 0) {
                           return const Padding(
                             padding: EdgeInsets.all(16.0),
-                            child: Text("No upcoming events found. Register on start.gg and tournaments will show here"),
+                            child: Text("You aren't registered for any upcoming tournaments. As registration is not currently supported in this application, register on start.gg and come back here."),
                           );
                         } else {
                           return Container(); // Empty placeholder for refreshing indicator.

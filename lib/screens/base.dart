@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:start_gg_app/helpers/oauth.dart';
-import 'package:start_gg_app/screens/events.dart';
+import 'package:start_gg_app/screens/followed_events.dart';
+import 'package:start_gg_app/screens/registered_events.dart';
 import 'package:start_gg_app/screens/find.dart';
 import 'package:start_gg_app/screens/onboarding.dart';
 import 'package:start_gg_app/widgets/loading_widget.dart';
@@ -41,11 +42,14 @@ class _BasePageState extends State<BasePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = const EventsPage();
+        page = const RegisteredEventsPage();
         break;
       case 1:
-        page = Container();
+        page = const FollowedEventsPage();
+        break;
       case 2:
+        page = Container();
+      case 3:
         page = const FindPage();
         break;
       default:
@@ -64,7 +68,11 @@ class _BasePageState extends State<BasePage> {
           destinations: const <Widget>[
             NavigationDestination(
               icon: Icon(Icons.sports_esports),
-              label: 'Events',
+              label: 'Registered',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.groups),
+              label: 'Followed',
             ),
             // TODO: Implement the History page
             NavigationDestination(
