@@ -38,7 +38,7 @@ class FollowUserSearchController extends ChangeNotifier {
     // TODO: Pagination
     // We're using a different API to usual, so we can avoid all our oauth code, as well as our normal adaptors
     final queryParams = {
-      "query": r'query user($query: PlayerQuery!) { players(query: $query) { nodes { id name prefix gamerTag images(type: "profile") { id type url } } } }',
+      "query": r'query user($query: PlayerQuery!) { players(query: $query) { nodes { id name prefix gamerTag images(type: "profile") { id type url } user { id } } } }',
       "variables": '{"query":{"filter":{"searchField":$search}}}',
     };
     final url = Uri.https('www.start.gg', '/api/-/gql-public', queryParams);
@@ -65,7 +65,7 @@ class FollowUserSearchController extends ChangeNotifier {
       if (user['images'].isNotEmpty) {
         imageURL = user['images'][0]['url'];
       }
-      var obj = User(user['id'], user['gamerTag'], imageURL);
+      var obj = User(user['user']['id'], user['gamerTag'], imageURL);
       _data.add(obj);
     }
 

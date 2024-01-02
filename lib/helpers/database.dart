@@ -15,7 +15,9 @@ class DatabaseHelper {
     _database = await openDatabase(
       join(await getDatabasesPath(), 'data.db'),
       onCreate: (db, version) {
-        // TODO: Create tables and define the schema
+        return db.execute(
+          'CREATE TABLE followed_users (id INTEGER PRIMARY KEY)',
+        );
       },
       onUpgrade: (db, oldVersion, newVersion) {
         // TODO: Implement this

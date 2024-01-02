@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:start_gg_app/controllers/datastate.dart';
+import 'package:start_gg_app/helpers/database.dart';
 import 'package:start_gg_app/helpers/graphql.dart';
 import 'package:start_gg_app/helpers/oauth.dart';
 import 'package:start_gg_app/models/followed_user.dart';
@@ -12,7 +14,6 @@ class FollowedUsersController extends ChangeNotifier {
   List<FollowedUser> _data = [];
   DataState state = DataState.uninitialized;
   final log = Logger('FollowedUsersController');
-  Set<int> followedUsers = {1000868, 854147};
 
   FollowedUsersController({required BuildContext context}) {
     fetch(context);
@@ -31,6 +32,11 @@ class FollowedUsersController extends ChangeNotifier {
 
   void fetch(BuildContext context) async {
     state = DataState.fetching;
+    notifyListeners();
+
+    final db = await DatabaseHelper().database;
+    final users = await db.query('followed_users');
+    final followedUsers = users.map((u) => u['id']).toList();
 
     // TODO: Implement database storage of our userIds
     _data = [];
@@ -65,6 +71,13 @@ class FollowedUsersController extends ChangeNotifier {
       if (result.data == null || result.data!['user'] == null) {
         log.warning("Unable to fetch user data for ($userId)");
         log.info(result);
+
+        // We still want to give users a way of clearing/removing this broken user, since it could be persistent and slow down servers, etc etc
+        // TODO: Decide whether we should silently remove users who fail at this step instead of this
+        // TODO: We need to sort out null saftey on models. We are passing an empty string here so it "just works", but instead we should handle nulls properly.
+        var user = User(userId as int?, "Error $userId", "");
+        _data.add(FollowedUser(user));
+
         continue;
       }
 
@@ -80,14 +93,20 @@ class FollowedUsersController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void unfollowUser({required BuildContext context, required int id}) {
-    followedUsers.remove(id);
+  Future<void> unfollowUser({required BuildContext context, required int id}) async {
+    final db = await DatabaseHelper().database;
+    await db.delete(
+      'followed_users',
+      where: "id = ?",
+      whereArgs: [id],
+    );
+
     fetch(context);
   }
 
-  void followUser({required BuildContext context, required int id}) {
-    log.fine("Now following $id");
-    followedUsers.add(id);
+  Future<void> followUser({required BuildContext context, required int id}) async {
+    final db = await DatabaseHelper().database;
+    await db.insert('followed_users', {'id': id}, conflictAlgorithm: ConflictAlgorithm.ignore);
     fetch(context);
   }
 }

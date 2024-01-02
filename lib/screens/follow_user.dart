@@ -56,7 +56,7 @@ class FollowUserPage extends StatelessWidget {
                             Consumer<FollowedUsersController>(
                               builder: (BuildContext context, FollowedUsersController usersController, Widget? _) => ElevatedButton(
                                 onPressed: () {
-                                  usersController.followUser(context: context, id: usersController[i - 1].user.id!);
+                                  usersController.followUser(context: context, id: controller[i - 1].id!);
                                   Navigator.pop(context);
                                 },
                                 child: const Text("Follow"),

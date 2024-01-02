@@ -9,5 +9,12 @@ class FollowedUser {
 
   User user;
 
+  // These keys correspond to those in the database
+  Map<String, dynamic> toMap() {
+    return {
+      'id': user.id!,
+    };
+  }
+
   FollowedUser(this.user);
 }

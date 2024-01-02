@@ -43,6 +43,7 @@ class FollowedTournamentController extends ChangeNotifier {
 
     if (userIds.isEmpty) {
       _data = [];
+      state = DataState.fetched;
       notifyListeners();
       log.fine("No followed users");
       return;
@@ -52,6 +53,8 @@ class FollowedTournamentController extends ChangeNotifier {
     //       For this case, we don't need to fetch every result again, but just remove tournaments which are here due to the user alone.
 
     state = DataState.fetching;
+    notifyListeners();
+    
     final oauth = Provider.of<OAuthToken>(context, listen: false);
     final accessToken = oauth.client!.credentials.accessToken;
 
