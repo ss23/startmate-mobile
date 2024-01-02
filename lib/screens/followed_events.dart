@@ -52,7 +52,17 @@ class FollowedEventsPage extends StatelessWidget {
                             return Container(); // Empty placeholder for refreshing indicator.
                           }
                         }
-                        return UserBadgeWidget(usersController[i - 1].user!);
+                        return UserBadgeWidget(
+                          usersController[i - 1].user,
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () {
+                                usersController.unfollowUser(context: context, id: usersController[i - 1].user.id!);
+                              },
+                              child: const Text("Unfollow"),
+                            ),
+                          ],
+                        );
                       },
                     ),
                   );

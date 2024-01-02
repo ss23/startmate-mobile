@@ -12,7 +12,7 @@ class FollowedUsersController extends ChangeNotifier {
   List<FollowedUser> _data = [];
   DataState state = DataState.uninitialized;
   final log = Logger('FollowedUsersController');
-  Set<String> followedUsers = {"1000868", "854147"};
+  Set<int> followedUsers = {1000868, 854147};
 
   FollowedUsersController({required BuildContext context}) {
     fetch(context);
@@ -73,21 +73,20 @@ class FollowedUsersController extends ChangeNotifier {
       // TODO: Check if image exists first
       // FIXME: Check if image exists first (e.g. no profile picture)
       var user = User(userData['id'], userData['player']['gamerTag'], userData['images'][0]['url']);
-      var followedUser = FollowedUser(userId);
-      followedUser.user = user;
-      _data.add(followedUser);
+      _data.add(FollowedUser(user));
     }
 
     state = DataState.fetched;
     notifyListeners();
   }
 
-  void unfollowUser({required BuildContext context, required String id}) {
+  void unfollowUser({required BuildContext context, required int id}) {
     followedUsers.remove(id);
     fetch(context);
   }
 
-  void followUser({required BuildContext context, required String id}) {
+  void followUser({required BuildContext context, required int id}) {
+    log.fine("Now following $id");
     followedUsers.add(id);
     fetch(context);
   }

@@ -13,7 +13,7 @@ import 'package:start_gg_app/videogame.dart';
 class FollowedTournamentController extends ChangeNotifier {
   List<Tournament> _data = [];
   DataState state = DataState.uninitialized;
-  List<String> userIds = [];
+  List<int> userIds = [];
   dynamic filter;
   final log = Logger('FollowedTournamentController');
 
@@ -34,7 +34,7 @@ class FollowedTournamentController extends ChangeNotifier {
 
   void update(BuildContext context, FollowedUsersController followedUsersController) {
     log.fine("Updated userIds");
-    userIds = followedUsersController.data().map((user) => user.startggId).toList();
+    userIds = followedUsersController.data().map((user) => user.user.id!).toList();
     fetch(context);
   }
 
@@ -47,6 +47,9 @@ class FollowedTournamentController extends ChangeNotifier {
       log.fine("No followed users");
       return;
     }
+
+    // TODO: Implement a faster version of fetching for the case where all that has changed is one less userId is in the list.
+    //       For this case, we don't need to fetch every result again, but just remove tournaments which are here due to the user alone.
 
     state = DataState.fetching;
     final oauth = Provider.of<OAuthToken>(context, listen: false);

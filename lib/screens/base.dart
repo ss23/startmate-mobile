@@ -48,7 +48,7 @@ class _BasePageState extends State<BasePage> {
         break;
       case 1:
         page = const FollowedEventsPage();
-        fab = FollowedEventsFAB();
+        fab = FollowedEventsFAB(context: context);
         break;
       case 2:
         page = Container();

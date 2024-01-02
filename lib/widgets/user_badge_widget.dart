@@ -3,8 +3,9 @@ import 'package:start_gg_app/user.dart';
 
 class UserBadgeWidget extends StatelessWidget {
   final User user;
+  final List<Widget> actions;
 
-  const UserBadgeWidget(this.user, {super.key});
+  const UserBadgeWidget(this.user, {super.key, this.actions = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +18,15 @@ class UserBadgeWidget extends StatelessWidget {
           child: Row(children: [
             ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(50)),
-                child: Image.network(
+                child: user.profileImage!.isNotEmpty ? Image.network(
                   user.profileImage!,
-                )),
+                ) : Container(),
+                ),
             Padding(
               padding: const EdgeInsets.only(left: 12.0),
               child: Column(children: [
                 Text(user.name!),
-                ElevatedButton(
-                  onPressed:() { },
-                  child: const Text("Unfollow"),
-                ),
+                for (var widget in actions) widget,
               ]),
             )
           ]),
