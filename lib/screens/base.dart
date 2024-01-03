@@ -77,10 +77,10 @@ class _BasePageState extends State<BasePage> {
               icon: Icon(Icons.groups),
               label: 'Followed',
             ),
-            NavigationDestination(
+            /* NavigationDestination(
               icon: Icon(Icons.history),
               label: 'History',
-            ),
+            ), */
             NavigationDestination(
               icon: Icon(Icons.search),
               label: 'Find',
