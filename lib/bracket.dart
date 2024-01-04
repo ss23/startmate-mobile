@@ -5,7 +5,6 @@ import 'package:startmate/event.dart';
 import 'package:startmate/helpers/oauth.dart';
 import 'package:startmate/phase.dart';
 import 'package:startmate/phasegroup.dart';
-import 'package:provider/provider.dart';
 import 'package:startmate/set.dart';
 
 class EventBracketPage extends StatefulWidget {
@@ -36,7 +35,9 @@ class _EventBracketPageState extends State<EventBracketPage> {
   }
 
   Future<void> populateEventdata() async {
-    final accessToken = Provider.of<OAuthToken>(context);
+    //final accessToken = Provider.of<OAuthToken>(context);
+    // TODO: Fix!
+    final accessToken = "";
     
     // We need to download all of the bracket data
     final HttpLink httpLink = HttpLink(
@@ -179,7 +180,9 @@ class _SetPageState extends State<SetPage> {
   }
 
   Future<void> getSetData() async {
-    final accessToken = Provider.of<OAuthToken>(context);
+    //final accessToken = Provider.of<OAuthToken>(context);
+    // TODO: Fix me!
+    final accessToken = "";
 
     // We need to download all of the bracket data
     final HttpLink httpLink = HttpLink(
