@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:logging/logging.dart';
-import 'package:start_gg_app/event.dart';
-import 'package:start_gg_app/helpers/oauth.dart';
-import 'package:start_gg_app/phase.dart';
-import 'package:start_gg_app/phasegroup.dart';
+import 'package:startmate/event.dart';
+import 'package:startmate/helpers/oauth.dart';
+import 'package:startmate/phase.dart';
+import 'package:startmate/phasegroup.dart';
 import 'package:provider/provider.dart';
-import 'package:start_gg_app/set.dart';
+import 'package:startmate/set.dart';
 
 class EventBracketPage extends StatefulWidget {
   const EventBracketPage({super.key, required this.event});
@@ -36,8 +36,7 @@ class _EventBracketPageState extends State<EventBracketPage> {
   }
 
   Future<void> populateEventdata() async {
-    final oauth = Provider.of<OAuthToken>(context);
-    final accessToken = oauth.client!.credentials.accessToken;
+    final accessToken = Provider.of<OAuthToken>(context);
     
     // We need to download all of the bracket data
     final HttpLink httpLink = HttpLink(
@@ -180,8 +179,7 @@ class _SetPageState extends State<SetPage> {
   }
 
   Future<void> getSetData() async {
-    final oauth = Provider.of<OAuthToken>(context);
-    final accessToken = oauth.client!.credentials.accessToken;
+    final accessToken = Provider.of<OAuthToken>(context);
 
     // We need to download all of the bracket data
     final HttpLink httpLink = HttpLink(

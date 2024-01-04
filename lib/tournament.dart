@@ -1,4 +1,4 @@
-import 'package:start_gg_app/event.dart';
+import 'package:startmate/event.dart';
 
 // https://developer.start.gg/reference/tournament.doc
 class Tournament {

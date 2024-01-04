@@ -7,7 +7,7 @@
         </intent>
     </queries>
     <application
-        android:label="start_gg_app"
+        android:label="StartMate for start.gg"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

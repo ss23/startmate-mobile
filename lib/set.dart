@@ -1,5 +1,5 @@
-import 'package:start_gg_app/event.dart';
-import 'package:start_gg_app/phasegroup.dart';
+import 'package:startmate/event.dart';
+import 'package:startmate/phasegroup.dart';
 
 // https://developer.start.gg/reference/set.doc
 class GGSet {

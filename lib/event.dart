@@ -1,5 +1,5 @@
-import 'package:start_gg_app/tournament.dart';
-import 'package:start_gg_app/videogame.dart';
+import 'package:startmate/tournament.dart';
+import 'package:startmate/videogame.dart';
 
 // https://developer.start.gg/reference/event.doc
 class Event {

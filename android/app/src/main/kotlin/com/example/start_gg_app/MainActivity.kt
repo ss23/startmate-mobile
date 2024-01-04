@@ -1,4 +1,4 @@
-package com.example.start_gg_app
+package nz.geek.ss23.startmate
 
 import io.flutter.embedding.android.FlutterActivity
 

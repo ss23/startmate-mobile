@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:start_gg_app/screens/follow_user.dart';
+import 'package:startmate/screens/follow_user.dart';
 
 class FollowedEventsFAB extends FloatingActionButton {
   FollowedEventsFAB({super.key, context})

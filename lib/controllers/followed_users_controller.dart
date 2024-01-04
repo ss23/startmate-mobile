@@ -1,51 +1,30 @@
-import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:logging/logging.dart';
-import 'package:provider/provider.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:start_gg_app/controllers/datastate.dart';
-import 'package:start_gg_app/helpers/database.dart';
-import 'package:start_gg_app/helpers/graphql.dart';
-import 'package:start_gg_app/helpers/oauth.dart';
-import 'package:start_gg_app/models/followed_user.dart';
-import 'package:start_gg_app/user.dart';
+import 'package:startmate/helpers/database.dart';
+import 'package:startmate/helpers/graphql.dart';
+import 'package:startmate/helpers/oauth.dart';
+import 'package:startmate/models/followed_user.dart';
+import 'package:startmate/user.dart';
 
-class FollowedUsersController extends ChangeNotifier {
-  List<FollowedUser> _data = [];
-  DataState state = DataState.uninitialized;
-  final log = Logger('FollowedUsersController');
+part 'followed_users_controller.g.dart';
 
-  FollowedUsersController({required BuildContext context}) {
-    fetch(context);
-  }
+@riverpod
+class FollowedUsers extends _$FollowedUsers {
+  final _log = Logger('FollowedUsers');
 
-  List<FollowedUser> data() {
-    return _data;
-  }
-
-  // TODO: Support paginated results with lazy loading!
-  int get length => _data.length;
-
-  FollowedUser operator [](int index) {
-    return _data[index];
-  }
-
-  void fetch(BuildContext context) async {
-    state = DataState.fetching;
-    notifyListeners();
-
+  Future<List<FollowedUser>> _fetch() async {
     final db = await DatabaseHelper().database;
     final users = await db.query('followed_users');
     final followedUsers = users.map((u) => u['id']).toList();
 
-    // TODO: Implement database storage of our userIds
-    _data = [];
-
-    final oauth = Provider.of<OAuthToken>(context, listen: false);
-    final accessToken = oauth.client!.credentials.accessToken;
+    final accessToken = ref.watch(oAuthTokenProvider).requireValue;
 
     GraphQLHelper.accessToken = accessToken;
     final client = await GraphQLHelper().client;
+
+    List<FollowedUser> data = [];
 
     for (var userId in followedUsers) {
       var query = r'query user($userId: ID!) { user(id: $userId) { id name player { gamerTag } images(type: "profile") { id type url } } }';
@@ -53,30 +32,33 @@ class FollowedUsersController extends ChangeNotifier {
       var result = await client.query(options);
 
       if (result.data == null) {
-        if (result.hasException && result.exception!.linkException!.runtimeType == HttpLinkServerException) {
-          final exception = result.exception!.linkException! as HttpLinkServerException;
-          if (exception.parsedResponse!.response["message"] == "Invalid authentication token") {
-            log.warning("Invalid authentication token. Forcing reauthentication");
-            oauth.reauthenticate();
-            // Clear GraphQL cache too
-            client.resetStore(refetchQueries: false);
-            return;
+        if (result.hasException) {
+          if (result.exception!.linkException!.runtimeType == HttpLinkServerException) {
+            final exception = result.exception!.linkException! as HttpLinkServerException;
+            if (exception.parsedResponse!.response["message"] == "Invalid authentication token") {
+              _log.warning("Invalid authentication token. Forcing reauthentication");
+              ref.invalidate(oAuthTokenProvider);
+              // Clear GraphQL cache too
+              client.resetStore(refetchQueries: false);
+            }
           }
+          _log.warning("Unable to fetch data due to exception");
+          throw result.exception!;
         }
-        log.warning("Unable to fetch data");
-        log.info(result);
-        return;
+        _log.warning("Unable to fetch data but no exception triggered");
+        _log.info(result);
+        throw Exception("Unable to fetch followed user data");
       }
 
       if (result.data == null || result.data!['user'] == null) {
-        log.warning("Unable to fetch user data for ($userId)");
-        log.info(result);
+        _log.warning("Unable to fetch user data for ($userId)");
+        _log.info(result);
 
         // We still want to give users a way of clearing/removing this broken user, since it could be persistent and slow down servers, etc etc
         // TODO: Decide whether we should silently remove users who fail at this step instead of this
         // TODO: We need to sort out null saftey on models. We are passing an empty string here so it "just works", but instead we should handle nulls properly.
         var user = User(userId as int?, "Error $userId", "");
-        _data.add(FollowedUser(user));
+        data.add(FollowedUser(user));
 
         continue;
       }
@@ -86,14 +68,20 @@ class FollowedUsersController extends ChangeNotifier {
       // TODO: Check if image exists first
       // FIXME: Check if image exists first (e.g. no profile picture)
       var user = User(userData['id'], userData['player']['gamerTag'], userData['images'][0]['url']);
-      _data.add(FollowedUser(user));
+      data.add(FollowedUser(user));
     }
 
-    state = DataState.fetched;
-    notifyListeners();
+    return data;
   }
 
-  Future<void> unfollowUser({required BuildContext context, required int id}) async {
+  @override
+  FutureOr<List<FollowedUser>> build() async {
+    return _fetch();
+  }
+
+  Future<void> unfollowUser({required int id}) async {
+    state = const AsyncValue.loading();
+
     final db = await DatabaseHelper().database;
     await db.delete(
       'followed_users',
@@ -101,12 +89,19 @@ class FollowedUsersController extends ChangeNotifier {
       whereArgs: [id],
     );
 
-    fetch(context);
+    state = await AsyncValue.guard(() async {
+      return _fetch();
+    });
   }
 
-  Future<void> followUser({required BuildContext context, required int id}) async {
+  Future<void> followUser({required int id}) async {
+    state = const AsyncValue.loading();
+
     final db = await DatabaseHelper().database;
     await db.insert('followed_users', {'id': id}, conflictAlgorithm: ConflictAlgorithm.ignore);
-    fetch(context);
+
+    state = await AsyncValue.guard(() async {
+      return _fetch();
+    });
   }
 }

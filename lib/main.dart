@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:provider/provider.dart';
-import 'package:start_gg_app/helpers/oauth.dart';
-import 'package:start_gg_app/screens/base.dart';
+import 'package:startmate/screens/base.dart';
 
 void main() {
   // Configure logging
@@ -13,14 +12,10 @@ void main() {
     print('${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
   });
 
-  runApp(MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => OAuthToken()),
-      ],
-      child: MaterialApp(
-        home: const BasePage(),
-        theme: ThemeData(
-          useMaterial3: true,
-        ),
-      )));
+  runApp(ProviderScope(child: MaterialApp(
+    home: const BasePage(),
+    theme: ThemeData(
+      useMaterial3: true,
+    ),
+  ),));
 }

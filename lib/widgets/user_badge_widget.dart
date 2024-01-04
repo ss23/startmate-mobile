@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:start_gg_app/user.dart';
+import 'package:startmate/user.dart';
 
 class UserBadgeWidget extends StatelessWidget {
   final User user;

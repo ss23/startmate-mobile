@@ -1,5 +1,5 @@
-name: start_gg_app
-description: A new Flutter project.
+name: startmate
+description: A cross platform mobile application for interacting with start.gg
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -30,7 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.0.0
   http: ^1.1.0
   graphql_flutter: ^5.2.0-beta.5
   transparent_image: ^2.0.1
@@ -43,6 +42,9 @@ dependencies:
   uni_links: ^0.5.1
   logging: ^1.2.0
   cached_network_image: ^3.3.0
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+  go_router: ^13.0.1
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +56,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.1
+  riverpod_generator: ^2.3.9
+  build_runner: ^2.4.7
+  custom_lint: ^0.5.7
+  riverpod_lint: ^2.3.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

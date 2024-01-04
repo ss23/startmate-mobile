@@ -1,4 +1,4 @@
-import 'package:start_gg_app/user.dart';
+import 'package:startmate/user.dart';
 
 class FollowedUser {
   // TODO: Decide whether a FollowedUser contains information about the start.gg user, or just references it

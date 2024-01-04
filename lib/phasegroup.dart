@@ -1,4 +1,4 @@
-import 'package:start_gg_app/phase.dart';
+import 'package:startmate/phase.dart';
 
 // https://developer.start.gg/reference/phase.doc
 class PhaseGroup {
