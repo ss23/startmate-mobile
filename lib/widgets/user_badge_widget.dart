@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:startmate/user.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class UserBadgeWidget extends StatelessWidget {
   final User user;
