@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:startmate/helpers/oauth.dart';
@@ -20,24 +21,22 @@ class OnboardingPage extends ConsumerWidget {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         Navigator.pop(context);
       });
-      return const LoadingWidget(reason: 'Authenticated successfully! Redirecting back.');
+      return LoadingWidget(reason: AppLocalizations.of(context)!.authenticateSuccessRedirect);
     }
 
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Padding(
-            padding: EdgeInsets.all(32),
-            child: Text(
-              'To use this application, you need to authenticate using start.gg. Click the following button to launch a browser and authorize your account. You will be redirected back here when finished.',
-            ),
+          Padding(
+            padding: const EdgeInsets.all(32),
+            child: Text(AppLocalizations.of(context)!.authenticateRequest),
           ),
           FilledButton(
             onPressed: () {
               ref.read(oAuthTokenProvider.notifier).authenticate();
             },
-            child: const Text('Authenticate'),
+            child: Text(AppLocalizations.of(context)!.authenticateRequestLabel),
           ),
         ],
       ),

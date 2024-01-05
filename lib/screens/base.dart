@@ -37,16 +37,18 @@ class _BasePageState extends ConsumerState<BasePage> {
               MaterialPageRoute(builder: (context) => OnboardingPage()),
             );
           });
-          return const LoadingWidget(reason: 'Redirecting to onboarding');
+          return LoadingWidget(reason: AppLocalizations.of(context)!.authenticateRequestRedirect);
         } else {
           // This is the case where we were successfully able to obtain the client credentials
+          // We can simply let the program continue and render the base page
         }
       case AsyncValue(:final error?):
         // There should be no case where we get an error, unless the API is down or similar.
         log.severe(error);
-        return const LoadingWidget(reason: 'An error occured! Restart the application');
+        return LoadingWidget(reason: AppLocalizations.of(context)!.genericError(error.toString()));
       case _:
-        return const LoadingWidget(reason: 'Waiting for credentials');
+        // In this case, we are waiting on the oauth class to test and save credentials before the rest of the application can use them
+        return LoadingWidget(reason: AppLocalizations.of(context)!.authenticateRequestPending);
     }
 
     Widget page;

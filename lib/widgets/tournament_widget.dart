@@ -66,6 +66,7 @@ class TournamentWidget extends StatelessWidget {
                 child: Row(
                   children: [
                     const Icon(Icons.calendar_month),
+                    // TODO: i18n for this date
                     Text(DateFormat('yyyy-MM-dd - kk:mm').format(tournament.startAt)),
                   ],
                 ),

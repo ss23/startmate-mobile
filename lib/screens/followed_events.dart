@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:startmate/controllers/followed_tournament_controller.dart';
 import 'package:startmate/controllers/followed_users_controller.dart';
@@ -20,9 +21,9 @@ class FollowedEventsPage extends ConsumerWidget {
     switch (followedUsersController) {
       case AsyncData(:final value):
         if (value.isEmpty) {
-          followedUsersWidget = const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('Follow a user to see their events!'),
+          followedUsersWidget = Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(AppLocalizations.of(context)!.followUserEmpty),
           );
         } else {
           followedUsersWidget = ListView.builder(
@@ -36,7 +37,7 @@ class FollowedEventsPage extends ConsumerWidget {
                     onPressed: () {
                       ref.read(followedUsersProvider.notifier).unfollowUser(id: value[i].user.id!);
                     },
-                    child: const Text('Unfollow'),
+                    child: Text(AppLocalizations.of(context)!.followUserUnfollowLabel),
                   ),
                 ],
               );
@@ -46,7 +47,7 @@ class FollowedEventsPage extends ConsumerWidget {
       case AsyncError(:final error):
         followedUsersWidget = Padding(
           padding: const EdgeInsets.all(16),
-          child: Text('An error occured. Try again later, or submit a bug! $error'),
+          child: Text(AppLocalizations.of(context)!.genericError(error.toString())),
         );
       case _:
         followedUsersWidget = const Center(child: CircularProgressIndicator());
@@ -56,9 +57,9 @@ class FollowedEventsPage extends ConsumerWidget {
     switch (followedTournamentController) {
       case AsyncData(:final value):
         if (value.isEmpty) {
-          followedTournaments = const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('No upcoming tournaments found. Follow more people to see their tournaments!'),
+          followedTournaments = Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(AppLocalizations.of(context)!.followUserTournamentsEmpty),
           );
         } else {
           followedTournaments = ListView.builder(
@@ -73,7 +74,7 @@ class FollowedEventsPage extends ConsumerWidget {
       case AsyncError(:final error):
         followedTournaments = Padding(
           padding: const EdgeInsets.all(16),
-          child: Text('An error occured. Try again later, or submit a bug! $error'),
+          child: Text(AppLocalizations.of(context)!.genericError(error.toString())),
         );
       case _:
         followedTournaments = const Center(child: CircularProgressIndicator());
@@ -86,7 +87,7 @@ class FollowedEventsPage extends ConsumerWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 16, top: 8),
-            child: Text('Followed Users', style: theme.textTheme.labelMedium),
+            child: Text(AppLocalizations.of(context)!.followUserUsersLabel, style: theme.textTheme.labelMedium),
           ),
           SizedBox(
             height: 100,
@@ -94,7 +95,7 @@ class FollowedEventsPage extends ConsumerWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16, top: 8),
-            child: Text('Tournaments', style: theme.textTheme.labelMedium),
+            child: Text(AppLocalizations.of(context)!.followUserTournamentsLabel, style: theme.textTheme.labelMedium),
           ),
           const SizedBox(height: 10),
           followedTournaments,

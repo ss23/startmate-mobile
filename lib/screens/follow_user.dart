@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:startmate/controllers/follow_user_search_controller.dart';
 import 'package:startmate/controllers/followed_users_controller.dart';
@@ -25,7 +26,7 @@ class _FollowUserPageState extends ConsumerState<FollowUserPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Follow a user'),
+        title: Text(AppLocalizations.of(context)!.followUserFollowLabel),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8),
@@ -33,9 +34,9 @@ class _FollowUserPageState extends ConsumerState<FollowUserPage> {
           children: [
             TextField(
               autocorrect: false,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Search for a user',
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.followUserSearchLabel,
               ),
               onSubmitted: (search) {
                 setState(() {
@@ -47,26 +48,31 @@ class _FollowUserPageState extends ConsumerState<FollowUserPage> {
             if (fetchUsers != null)
               Expanded(
                 child: switch (fetchUsers) {
-                  AsyncData(:final value) => ListView.builder(
-                      itemCount: value.length,
-                      itemBuilder: (BuildContext context, int i) {
-                        return UserBadgeWidget(
-                          value[i],
-                          actions: [
-                            ElevatedButton(
-                              onPressed: () {
-                                ref.read(followedUsersProvider.notifier).followUser(id: value[i].id!);
-                                Navigator.pop(context);
-                              },
-                              child: const Text('Follow'),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                  AsyncData(:final value) => (value.isEmpty)
+                      ? Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(AppLocalizations.of(context)!.followUserUsersEmpty),
+                        )
+                      : ListView.builder(
+                          itemCount: value.length,
+                          itemBuilder: (BuildContext context, int i) {
+                            return UserBadgeWidget(
+                              value[i],
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    ref.read(followedUsersProvider.notifier).followUser(id: value[i].id!);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(AppLocalizations.of(context)!.followUserButtonLabel),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                   AsyncError(:final error) => Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Text('An error occured! Please try again or file a bug. $error'),
+                      child: Text(AppLocalizations.of(context)!.genericError(error.toString())),
                     ),
                   _ => const Center(child: CircularProgressIndicator()),
                 },
