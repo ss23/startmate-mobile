@@ -3,6 +3,8 @@ import 'package:startmate/phasegroup.dart';
 
 // https://developer.start.gg/reference/phase.doc
 class Phase {
+  Phase(this.id, this.name);
+
   int? id;
   int? bracketType; // TODO: https://developer.start.gg/reference/brackettype.doc
   Event? event;
@@ -13,8 +15,6 @@ class Phase {
   int? phaseOrder;
   int? activityState; // ActivityState::CREATED, ActivityState::ACTIVE, ActivityState::COMPLETED
   List<PhaseGroup> phaseGroups = [];
-
-  Phase(this.id, this.name);
 
   /*
   # Phase groups under this phase, paginated

@@ -24,46 +24,46 @@ class FollowedUsers extends _$FollowedUsers {
     GraphQLHelper.accessToken = accessToken;
     final client = await GraphQLHelper().client;
 
-    List<FollowedUser> data = [];
+    final data = <FollowedUser>[];
 
-    for (var userId in followedUsers) {
-      var query = r'query user($userId: ID!) { user(id: $userId) { id name player { gamerTag } images(type: "profile") { id type url } } }';
-      var options = QueryOptions(document: gql(query), variables: {'userId': userId});
-      var result = await client.query(options);
+    for (final userId in followedUsers) {
+      const query = r'query user($userId: ID!) { user(id: $userId) { id name player { gamerTag } images(type: "profile") { id type url } } }';
+      final options = QueryOptions(document: gql(query), variables: {'userId': userId});
+      final result = await client.query(options);
 
       if (result.data == null) {
         if (result.hasException) {
           if (result.exception!.linkException!.runtimeType == HttpLinkServerException) {
             final exception = result.exception!.linkException! as HttpLinkServerException;
-            if (exception.parsedResponse!.response["message"] == "Invalid authentication token") {
-              _log.warning("Invalid authentication token. Forcing reauthentication");
+            if (exception.parsedResponse!.response['message'] == 'Invalid authentication token') {
+              _log.warning('Invalid authentication token. Forcing reauthentication');
               ref.invalidate(oAuthTokenProvider);
               // Clear GraphQL cache too
-              client.resetStore(refetchQueries: false);
+              await client.resetStore(refetchQueries: false);
             }
           }
-          _log.warning("Unable to fetch data due to exception");
+          _log.warning('Unable to fetch data due to exception');
           throw result.exception!;
         }
-        _log.warning("Unable to fetch data but no exception triggered");
+        _log.warning('Unable to fetch data but no exception triggered');
         _log.info(result);
-        throw Exception("Unable to fetch followed user data");
+        throw Exception('Unable to fetch followed user data');
       }
 
       if (result.data == null || result.data!['user'] == null) {
-        _log.warning("Unable to fetch user data for ($userId)");
+        _log.warning('Unable to fetch user data for ($userId)');
         _log.info(result);
 
         // We still want to give users a way of clearing/removing this broken user, since it could be persistent and slow down servers, etc etc
         // TODO: Decide whether we should silently remove users who fail at this step instead of this
         // TODO: We need to sort out null saftey on models. We are passing an empty string here so it "just works", but instead we should handle nulls properly.
-        var user = User(userId as int?, "Error $userId", "");
+        final user = User(userId as int?, 'Error $userId', '');
         data.add(FollowedUser(user));
 
         continue;
       }
 
-      var userData = result.data!['user'];
+      final userData = result.data!['user'];
 
       var imageUrl = '';
       if (userData['images'] != null && userData['images'].length > 0) {
@@ -72,7 +72,7 @@ class FollowedUsers extends _$FollowedUsers {
 
       // TODO: Check if image exists first
       // FIXME: Check if image exists first (e.g. no profile picture)
-      var user = User(userData['id'], userData['player']['gamerTag'], imageUrl);
+      final user = User(userData['id'], userData['player']['gamerTag'], imageUrl);
       data.add(FollowedUser(user));
     }
 
@@ -90,7 +90,7 @@ class FollowedUsers extends _$FollowedUsers {
     final db = await DatabaseHelper().database;
     await db.delete(
       'followed_users',
-      where: "id = ?",
+      where: 'id = ?',
       whereArgs: [id],
     );
 

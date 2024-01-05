@@ -11,9 +11,9 @@ import 'package:startmate/videogame.dart';
 part 'tournament_controller.g.dart';
 
 @riverpod
-Future<List<Tournament>> fetchTournaments(FetchTournamentsRef ref, {required filter, sortBy = "tournament.startAt desc"}) async {
+Future<List<Tournament>> fetchTournaments(FetchTournamentsRef ref, {required dynamic filter, String sortBy = 'tournament.startAt desc'}) async {
   final log = Logger('fetchTournaments');
-  log.fine("Fetching tournament data");
+  log.fine('Fetching tournament data');
 
   final accessToken = ref.watch(oAuthTokenProvider).requireValue;
 
@@ -22,61 +22,61 @@ Future<List<Tournament>> fetchTournaments(FetchTournamentsRef ref, {required fil
 
   // Begin by getting our clients ID
   var query = r'query user { currentUser { id, name, images (type: "profile") { url } } }';
-  QueryOptions options = QueryOptions(document: gql(query), variables: const {});
+  var options = QueryOptions(document: gql(query));
   var result = await client.query(options);
 
   if (result.data == null) {
     if (result.hasException) {
       if (result.exception!.linkException!.runtimeType == HttpLinkServerException) {
         final exception = result.exception!.linkException! as HttpLinkServerException;
-        if (exception.parsedResponse!.response["message"] == "Invalid authentication token") {
-          log.warning("Invalid authentication token. Forcing reauthentication");
+        if (exception.parsedResponse!.response['message'] == 'Invalid authentication token') {
+          log.warning('Invalid authentication token. Forcing reauthentication');
           ref.invalidate(oAuthTokenProvider);
           // Clear GraphQL cache too
-          client.resetStore(refetchQueries: false);
+          await client.resetStore(refetchQueries: false);
         }
       }
-      log.warning("Unable to fetch data due to exception");
+      log.warning('Unable to fetch data due to exception');
       throw result.exception!;
     }
-    log.warning("Unable to fetch data but no exception triggered");
+    log.warning('Unable to fetch data but no exception triggered');
     log.info(result);
-    throw Exception("Unable to fetch tournament data");
+    throw Exception('Unable to fetch tournament data');
   }
 
   String? profileURL;
   if (result.data!['currentUser']['images'].length > 0) {
     profileURL = result.data!['currentUser']['images'][0]['url'];
   }
-  var currentUser = User(result.data!['currentUser']['id'], result.data!['currentUser']['name'], profileURL);
+  final currentUser = User(result.data!['currentUser']['id'], result.data!['currentUser']['name'], profileURL);
 
   // One query to select all the information we need about upcoming events, etc
   // TODO: Pagination
   query =
       r'query user($userId: ID!, $filter: UserTournamentsPaginationFilter!, $sortBy: String!) { currentUser { id, tournaments(query: { filter: $filter, sortBy: $sortBy } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, userEntrant(userId: $userId) { id } videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
-  options = QueryOptions(document: gql(query), variables: {'userId': currentUser.id, "filter": filter, "sortBy": sortBy});
+  options = QueryOptions(document: gql(query), variables: {'userId': currentUser.id, 'filter': filter, 'sortBy': sortBy});
   result = await client.query(options);
 
   if (result.data == null) {
-    log.warning("Unable to fetch tournament data");
+    log.warning('Unable to fetch tournament data');
     log.info(result);
-    throw Exception("Unable to fetch tournament data");
+    throw Exception('Unable to fetch tournament data');
   }
 
-  List<Tournament> data = [];
-  for (var tournament in result.data!['currentUser']['tournaments']['nodes']) {
+  final data = <Tournament>[];
+  for (final tournament in result.data!['currentUser']['tournaments']['nodes']) {
     // Create tournament object to begin with
-    var tournamentObj = Tournament(tournament['id'], tournament['name'], DateTime.fromMillisecondsSinceEpoch(tournament['startAt'] * 1000));
+    final tournamentObj = Tournament(tournament['id'], tournament['name'], DateTime.fromMillisecondsSinceEpoch(tournament['startAt'] * 1000));
     tournamentObj.city = tournament['city'];
     tournamentObj.slug = tournament['slug'];
     // Loop over events
-    for (var event in tournament['events']) {
+    for (final event in tournament['events']) {
       // Create a videogame for this event
       // TODO: Reuse videogame objects
-      var videogame = VideoGame(event['videogame']['id'], event['videogame']['name'], event['videogame']['images'][0]['url']);
+      final videogame = VideoGame(event['videogame']['id'], event['videogame']['name'], event['videogame']['images'][0]['url']);
 
       // Create event
-      var eventObj = Event(event['id'], event['name'], videogame, DateTime.fromMillisecondsSinceEpoch(event['startAt'] * 1000), event['numEntrants']);
+      final eventObj = Event(event['id'], event['name'], videogame, DateTime.fromMillisecondsSinceEpoch(event['startAt'] * 1000), event['numEntrants']);
       eventObj.slug = event['slug'];
       eventObj.tournament = tournamentObj;
       tournamentObj.events.add(eventObj);
@@ -87,14 +87,14 @@ Future<List<Tournament>> fetchTournaments(FetchTournamentsRef ref, {required fil
       }
     }
     // Loop over images
-    for (var image in tournament['images']) {
-      if (image['type'] == "banner") {
+    for (final image in tournament['images']) {
+      if (image['type'] == 'banner') {
         tournamentObj.imageURL = image['url'];
       }
     }
     data.add(tournamentObj);
   }
 
-  log.fine("Tournament data fetched successfully");
+  log.fine('Tournament data fetched successfully');
   return data;
 }

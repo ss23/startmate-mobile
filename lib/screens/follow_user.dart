@@ -28,7 +28,7 @@ class _FollowUserPageState extends ConsumerState<FollowUserPage> {
         title: const Text('Follow a user'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         child: Column(
           children: [
             TextField(
@@ -58,14 +58,15 @@ class _FollowUserPageState extends ConsumerState<FollowUserPage> {
                                 ref.read(followedUsersProvider.notifier).followUser(id: value[i].id!);
                                 Navigator.pop(context);
                               },
-                              child: const Text("Follow"),
+                              child: const Text('Follow'),
                             ),
                           ],
                         );
-                      }),
+                      },
+                    ),
                   AsyncError(:final error) => Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text("An error occured! Please try again or file a bug. $error"),
+                      padding: const EdgeInsets.all(16),
+                      child: Text('An error occured! Please try again or file a bug. $error'),
                     ),
                   _ => const Center(child: CircularProgressIndicator()),
                 },

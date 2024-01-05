@@ -5,7 +5,7 @@ import 'package:startmate/widgets/tournament_widget.dart';
 
 class FindPage extends ConsumerWidget {
   FindPage({super.key});
-  final filter = {"upcoming": true};
+  final filter = {'upcoming': true};
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,22 +17,23 @@ class FindPage extends ConsumerWidget {
       case AsyncData(:final value):
         if (value.isEmpty) {
           tournamentsWidget = const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text("No upcoming events found. Register on start.gg and tournaments will show here"),
+            padding: EdgeInsets.all(16),
+            child: Text('No upcoming events found. Register on start.gg and tournaments will show here'),
           );
         } else {
           tournamentsWidget = Expanded(
             child: ListView.builder(
-                itemCount: value.length,
-                itemBuilder: (BuildContext context, int i) {
-                  return TournamentWidget(tournament: value[i]);
-                }),
+              itemCount: value.length,
+              itemBuilder: (BuildContext context, int i) {
+                return TournamentWidget(tournament: value[i]);
+              },
+            ),
           );
         }
       case AsyncError(:final error):
         tournamentsWidget = Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text("An error occured! Please try again or report a bug. $error"),
+          padding: const EdgeInsets.all(16),
+          child: Text('An error occured! Please try again or report a bug. $error'),
         );
       case _:
         tournamentsWidget = const Center(child: CircularProgressIndicator());
@@ -46,7 +47,7 @@ class FindPage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+            padding: const EdgeInsets.only(left: 16, top: 8),
             child: Text('Featured Tournaments', style: theme.textTheme.labelMedium),
           ),
           const SizedBox(height: 10),

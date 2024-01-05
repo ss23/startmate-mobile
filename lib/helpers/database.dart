@@ -2,9 +2,9 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static final DatabaseHelper _instance = DatabaseHelper._privateConstructor();
   factory DatabaseHelper() => _instance;
   DatabaseHelper._privateConstructor();
+  static final DatabaseHelper _instance = DatabaseHelper._privateConstructor();
 
   Database? _database;
 

@@ -1,6 +1,8 @@
 import 'package:startmate/user.dart';
 
 class FollowedUser {
+  FollowedUser(this.user);
+
   // TODO: Decide whether a FollowedUser contains information about the start.gg user, or just references it
 
   // TODO: Implement these booleans properly
@@ -12,9 +14,7 @@ class FollowedUser {
   // These keys correspond to those in the database
   Map<String, dynamic> toMap() {
     return {
-      'id': user.id!,
+      'id': user.id,
     };
   }
-
-  FollowedUser(this.user);
 }

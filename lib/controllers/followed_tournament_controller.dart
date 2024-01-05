@@ -13,12 +13,12 @@ part 'followed_tournament_controller.g.dart';
 @riverpod
 Future<List<Tournament>> fetchFollowedTournaments(FetchFollowedTournamentsRef ref, dynamic filter) async {
   final log = Logger('fetchFollowedTournaments');
-  log.fine("Fetching followed tournament data");
+  log.fine('Fetching followed tournament data');
 
   final followedUsers = await ref.watch(followedUsersProvider.future);
 
   if (followedUsers.isEmpty) {
-    log.fine("No followed users");
+    log.fine('No followed users');
     return [];
   }
 
@@ -30,64 +30,64 @@ Future<List<Tournament>> fetchFollowedTournaments(FetchFollowedTournamentsRef re
   GraphQLHelper.accessToken = accessToken;
   final client = await GraphQLHelper().client;
 
-  List<Tournament> data = [];
-  for (var followedUser in followedUsers) {
+  final data = <Tournament>[];
+  for (final followedUser in followedUsers) {
     final userId = followedUser.user.id;
     // One query to select all the information we need about upcoming events, etc
     // TODO: Pagination
-    var query =
+    const query =
         r'query user($userId: ID!, $filter: UserTournamentsPaginationFilter!) { user(id: $userId) { tournaments(query: { filter: $filter } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
-    var options = QueryOptions(document: gql(query), variables: {'userId': userId, "filter": filter});
-    var result = await client.query(options);
+    final options = QueryOptions(document: gql(query), variables: {'userId': userId, 'filter': filter});
+    final result = await client.query(options);
 
     if (result.data == null) {
       if (result.hasException) {
         if (result.exception!.linkException!.runtimeType == HttpLinkServerException) {
           final exception = result.exception!.linkException! as HttpLinkServerException;
-          if (exception.parsedResponse!.response["message"] == "Invalid authentication token") {
-            log.warning("Invalid authentication token. Forcing reauthentication");
+          if (exception.parsedResponse!.response['message'] == 'Invalid authentication token') {
+            log.warning('Invalid authentication token. Forcing reauthentication');
             ref.invalidate(oAuthTokenProvider);
             // Clear GraphQL cache too
-            client.resetStore(refetchQueries: false);
+            await client.resetStore(refetchQueries: false);
           }
         }
-        log.warning("Unable to fetch data due to exception");
+        log.warning('Unable to fetch data due to exception');
         throw result.exception!;
       }
-      log.warning("Unable to fetch data but no exception triggered");
+      log.warning('Unable to fetch data but no exception triggered');
       log.info(result);
-      throw Exception("Unable to fetch followed tournaments");
+      throw Exception('Unable to fetch followed tournaments');
     }
 
     if (result.data == null || result.data!['user'] == null) {
-      log.warning("Unable to fetch tournament data for user ($userId)");
+      log.warning('Unable to fetch tournament data for user ($userId)');
       log.info(result);
       continue;
     }
 
     if (result.data!['user']['tournaments'] == null) {
-      log.finer("Skipping user ($userId) with no upcoming tournaments");
+      log.finer('Skipping user ($userId) with no upcoming tournaments');
       continue;
     }
 
-    for (var tournament in result.data!['user']['tournaments']['nodes']) {
+    for (final tournament in result.data!['user']['tournaments']['nodes']) {
       // Perform deduplication here
       if (data.where((t) => t.id == tournament['id']).isNotEmpty) {
         continue;
       }
 
       // Create tournament object to begin with
-      var tournamentObj = Tournament(tournament['id'], tournament['name'], DateTime.fromMillisecondsSinceEpoch(tournament['startAt'] * 1000));
+      final tournamentObj = Tournament(tournament['id'], tournament['name'], DateTime.fromMillisecondsSinceEpoch(tournament['startAt'] * 1000));
       tournamentObj.city = tournament['city'];
       tournamentObj.slug = tournament['slug'];
       // Loop over events
-      for (var event in tournament['events']) {
+      for (final event in tournament['events']) {
         // Create a videogame for this event
         // TODO: Reuse videogame objects
-        var videogame = VideoGame(event['videogame']['id'], event['videogame']['name'], event['videogame']['images'][0]['url']);
+        final videogame = VideoGame(event['videogame']['id'], event['videogame']['name'], event['videogame']['images'][0]['url']);
 
         // Create event
-        var eventObj = Event(event['id'], event['name'], videogame, DateTime.fromMillisecondsSinceEpoch(event['startAt'] * 1000), event['numEntrants']);
+        final eventObj = Event(event['id'], event['name'], videogame, DateTime.fromMillisecondsSinceEpoch(event['startAt'] * 1000), event['numEntrants']);
         eventObj.slug = event['slug'];
         eventObj.tournament = tournamentObj;
         tournamentObj.events.add(eventObj);
@@ -95,8 +95,8 @@ Future<List<Tournament>> fetchFollowedTournaments(FetchFollowedTournamentsRef re
         // If we are participating, add it to our participating events list so we can later determine if we're registered for this event
       }
       // Loop over images
-      for (var image in tournament['images']) {
-        if (image['type'] == "banner") {
+      for (final image in tournament['images']) {
+        if (image['type'] == 'banner') {
           tournamentObj.imageURL = image['url'];
         }
       }

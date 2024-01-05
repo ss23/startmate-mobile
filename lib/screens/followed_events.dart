@@ -13,7 +13,7 @@ class FollowedEventsPage extends ConsumerWidget {
     final theme = Theme.of(context);
 
     final followedUsersController = ref.watch(followedUsersProvider);
-    final followedTournamentController = ref.watch(FetchFollowedTournamentsProvider(const {"upcoming": true}));
+    final followedTournamentController = ref.watch(FetchFollowedTournamentsProvider(const {'upcoming': true}));
 
     // TODO: Replace this with an inline version instead of pulling it out here (had syntax errors when I tried)
     Widget followedUsersWidget;
@@ -21,28 +21,32 @@ class FollowedEventsPage extends ConsumerWidget {
       case AsyncData(:final value):
         if (value.isEmpty) {
           followedUsersWidget = const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text("Follow a user to see their events!"),
+            padding: EdgeInsets.all(16),
+            child: Text('Follow a user to see their events!'),
           );
         } else {
           followedUsersWidget = ListView.builder(
-              itemCount: value.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (BuildContext context, int i) {
-                return UserBadgeWidget(value[i].user, actions: [
+            itemCount: value.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (BuildContext context, int i) {
+              return UserBadgeWidget(
+                value[i].user,
+                actions: [
                   ElevatedButton(
                     onPressed: () {
                       ref.read(followedUsersProvider.notifier).unfollowUser(id: value[i].user.id!);
                     },
-                    child: const Text("Unfollow"),
+                    child: const Text('Unfollow'),
                   ),
-                ]);
-              });
+                ],
+              );
+            },
+          );
         }
       case AsyncError(:final error):
         followedUsersWidget = Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text("An error occured. Try again later, or submit a bug! $error"),
+          padding: const EdgeInsets.all(16),
+          child: Text('An error occured. Try again later, or submit a bug! $error'),
         );
       case _:
         followedUsersWidget = const Center(child: CircularProgressIndicator());
@@ -53,22 +57,23 @@ class FollowedEventsPage extends ConsumerWidget {
       case AsyncData(:final value):
         if (value.isEmpty) {
           followedTournaments = const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text("No upcoming tournaments found. Follow more people to see their tournaments!"),
+            padding: EdgeInsets.all(16),
+            child: Text('No upcoming tournaments found. Follow more people to see their tournaments!'),
           );
         } else {
           followedTournaments = ListView.builder(
-              itemCount: value.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(), // Disable scrolling of the ListView
-              itemBuilder: (BuildContext context, int i) {
-                return TournamentWidget(tournament: value[i]);
-              });
+            itemCount: value.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(), // Disable scrolling of the ListView
+            itemBuilder: (BuildContext context, int i) {
+              return TournamentWidget(tournament: value[i]);
+            },
+          );
         }
       case AsyncError(:final error):
         followedTournaments = Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text("An error occured. Try again later, or submit a bug! $error"),
+          padding: const EdgeInsets.all(16),
+          child: Text('An error occured. Try again later, or submit a bug! $error'),
         );
       case _:
         followedTournaments = const Center(child: CircularProgressIndicator());
@@ -80,7 +85,7 @@ class FollowedEventsPage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+            padding: const EdgeInsets.only(left: 16, top: 8),
             child: Text('Followed Users', style: theme.textTheme.labelMedium),
           ),
           SizedBox(
@@ -88,7 +93,7 @@ class FollowedEventsPage extends ConsumerWidget {
             child: followedUsersWidget,
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+            padding: const EdgeInsets.only(left: 16, top: 8),
             child: Text('Tournaments', style: theme.textTheme.labelMedium),
           ),
           const SizedBox(height: 10),

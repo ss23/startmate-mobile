@@ -1,5 +1,7 @@
 // https://developer.start.gg/reference/user.doc
 class User {
+  User(this.id, this.name, this.profileImage);
+
   int? id;
   String? bio;
   String? birthday;
@@ -15,8 +17,6 @@ class User {
 
   // A list of events that are upcoming that the user is participating in
   List<int> upcomingEvents = [];
-
-  User(this.id, this.name, this.profileImage);
 
   /*
   # Authorizations to external services (i.e. Twitch, Twitter)

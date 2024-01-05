@@ -3,6 +3,8 @@ import 'package:startmate/phasegroup.dart';
 
 // https://developer.start.gg/reference/set.doc
 class GGSet {
+  GGSet(this.id);
+
   dynamic id; // ID can be a string if it is just a preview
   DateTime? completedAt;
   DateTime? createdAt;
@@ -21,8 +23,6 @@ class GGSet {
   String? vodUrl;
   int? wPlacement;
   int? winnerId;
-
-  GGSet(this.id);
 
   /*
   displayScore(mainEntrantId: ID): String

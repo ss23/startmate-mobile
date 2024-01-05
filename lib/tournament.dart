@@ -2,6 +2,8 @@ import 'package:startmate/event.dart';
 
 // https://developer.start.gg/reference/tournament.doc
 class Tournament {
+  Tournament(this.id, this.name, this.startAt);
+
   int id;
   String? addrState;
   String? city;
@@ -43,9 +45,7 @@ class Tournament {
   String? locationDisplayName; // This comes from the public API (not documented)
 
   List<Event> events = <Event>[];
-
-  Tournament(this.id, this.name, this.startAt);
- /*
+  /*
   events(limit: Int, filter: EventFilter): [Event]
   # Arguments
   # type: [Not documented]

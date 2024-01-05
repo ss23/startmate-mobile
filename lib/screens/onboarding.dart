@@ -16,25 +16,31 @@ class OnboardingPage extends ConsumerWidget {
     final candidateToken = oAuthToken.unwrapPrevious();
 
     if (candidateToken.hasValue && candidateToken.value != null && candidateToken.value!.isNotEmpty) {
-      log.info("Redirecting away from onboarding");
+      log.info('Redirecting away from onboarding');
       SchedulerBinding.instance.addPostFrameCallback((_) {
         Navigator.pop(context);
       });
-      return const LoadingWidget(reason: "Authenticated successfully! Redirecting back.");
+      return const LoadingWidget(reason: 'Authenticated successfully! Redirecting back.');
     }
 
     return Scaffold(
-      body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        const Padding(
-            padding: EdgeInsets.all(32.0),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(32),
             child: Text(
-                "To use this application, you need to authenticate using start.gg. Click the following button to launch a browser and authorize your account. You will be redirected back here when finished.")),
-        FilledButton(
+              'To use this application, you need to authenticate using start.gg. Click the following button to launch a browser and authorize your account. You will be redirected back here when finished.',
+            ),
+          ),
+          FilledButton(
             onPressed: () {
               ref.read(oAuthTokenProvider.notifier).authenticate();
             },
-            child: const Text("Authenticate")),
-      ]),
+            child: const Text('Authenticate'),
+          ),
+        ],
+      ),
     );
   }
 }

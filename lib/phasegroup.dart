@@ -2,6 +2,8 @@ import 'package:startmate/phase.dart';
 
 // https://developer.start.gg/reference/phase.doc
 class PhaseGroup {
+  PhaseGroup(this.id, this.displayIdentifier);
+
   int? id;
   int? bracketType; // TODO: https://developer.start.gg/reference/brackettype.doc
   String? bracketUrl;
@@ -13,8 +15,6 @@ class PhaseGroup {
   DateTime? startAt;
   int? state;
   String? tidebreakOrder;
-
-  PhaseGroup(this.id, this.displayIdentifier);
 
   /*
   progressionsOut: [Progression]

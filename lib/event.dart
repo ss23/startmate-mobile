@@ -3,6 +3,8 @@ import 'package:startmate/videogame.dart';
 
 // https://developer.start.gg/reference/event.doc
 class Event {
+  Event(this.id, this.name, this.videogame, this.startAt, this.numEntrants);
+
   int id;
   int? checkInBuffer;
   int? checkInDuration;
@@ -30,8 +32,6 @@ class Event {
   DateTime? updatedAt;
   bool? useEventSeeds;
   VideoGame videogame;
-
-  Event(this.id, this.name, this.videogame, this.startAt, this.numEntrants);
 
   /*
     # The entrants that belong to an event, paginated by filter criteria

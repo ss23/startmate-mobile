@@ -9,7 +9,7 @@ class RegisteredEventsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    const filter = {"upcoming": true};
+    const filter = {'upcoming': true};
 
     final tournamentController = ref.watch(FetchTournamentsProvider(filter: filter));
 
@@ -22,20 +22,21 @@ class RegisteredEventsPage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+            padding: const EdgeInsets.only(left: 16, top: 8),
             child: Text('Registered Tournaments', style: theme.textTheme.labelMedium),
           ),
           const SizedBox(height: 10),
           switch (tournamentController) {
             AsyncData(:final value) => Expanded(
                 child: ListView.builder(
-                    itemCount: value.length,
-                    itemBuilder: (BuildContext context, int i) {
-                      return TournamentWidget(tournament: value[i]);
-                    }),
+                  itemCount: value.length,
+                  itemBuilder: (BuildContext context, int i) {
+                    return TournamentWidget(tournament: value[i]);
+                  },
+                ),
               ),
             AsyncError() => const Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16),
                 child: Text("You aren't registered for any upcoming tournaments. As registration is not currently supported in this application, register on start.gg and come back here."),
               ),
             _ => const Center(child: CircularProgressIndicator()),
