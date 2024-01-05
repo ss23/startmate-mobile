@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
-import 'package:startmate/bracket.dart';
 import 'package:startmate/helpers/url.dart';
 import 'package:startmate/tournament.dart';
 import 'package:transparent_image/transparent_image.dart';
