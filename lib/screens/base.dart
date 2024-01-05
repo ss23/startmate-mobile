@@ -9,6 +9,7 @@ import 'package:startmate/screens/find.dart';
 import 'package:startmate/screens/onboarding.dart';
 import 'package:startmate/widgets/followed_events_fab.dart';
 import 'package:startmate/widgets/loading_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class BasePage extends ConsumerStatefulWidget {
@@ -75,22 +76,22 @@ class _BasePageState extends ConsumerState<BasePage> {
             });
           },
           selectedIndex: selectedIndex,
-          destinations: const <Widget>[
+          destinations: <Widget>[
             NavigationDestination(
-              icon: Icon(Icons.sports_esports),
-              label: 'Registered',
+              icon: const Icon(Icons.sports_esports),
+              label: AppLocalizations.of(context)!.navigationRegistered,
             ),
             NavigationDestination(
-              icon: Icon(Icons.groups),
-              label: 'Followed',
+              icon: const Icon(Icons.groups),
+              label: AppLocalizations.of(context)!.navigationFollowed,
             ),
             /* NavigationDestination(
               icon: Icon(Icons.history),
               label: 'History',
             ), */
             NavigationDestination(
-              icon: Icon(Icons.search),
-              label: 'Find',
+              icon: const Icon(Icons.search),
+              label: AppLocalizations.of(context)!.navigationFind,
             ),
           ],
         ),

@@ -1,0 +1,15 @@
+{
+    "@@locale": "en",
+    "navigationRegistered": "Registered",
+    "@navigationRegistered": {
+      "description": "Navigation label for the Registered page, the events the currently logged in user is signed up for"
+    },
+    "navigationFollowed": "Followed",
+    "@navigationFollowed": {
+      "description": "Navigation label for the Followed page, the events attended by users the currently logged in user follows"
+    },
+    "navigationFind": "Find",
+    "@navigationFind": {
+      "description": "Navigation label for the Find page, such as events featured by start.gg"
+    }
+  }
