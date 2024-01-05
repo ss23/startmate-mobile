@@ -48,24 +48,24 @@ class _FollowUserPageState extends ConsumerState<FollowUserPage> {
               Expanded(
                 child: switch (fetchUsers) {
                   AsyncData(:final value) => ListView.builder(
-                    itemCount: value.length,
-                    itemBuilder: (BuildContext context, int i) {
-                      return UserBadgeWidget(
-                        value[i],
-                        actions: [
-                          ElevatedButton(
-                            onPressed: () {
-                              ref.read(followedUsersProvider.notifier).followUser(id: value[i].id!);
-                              Navigator.pop(context);
-                            },
-                            child: const Text("Follow"),
-                          ),
-                        ],
-                      );
-                    }),
-                  AsyncError() => const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text("No results found."),
+                      itemCount: value.length,
+                      itemBuilder: (BuildContext context, int i) {
+                        return UserBadgeWidget(
+                          value[i],
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () {
+                                ref.read(followedUsersProvider.notifier).followUser(id: value[i].id!);
+                                Navigator.pop(context);
+                              },
+                              child: const Text("Follow"),
+                            ),
+                          ],
+                        );
+                      }),
+                  AsyncError(:final error) => Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text("An error occured! Please try again or file a bug. $error"),
                     ),
                   _ => const Center(child: CircularProgressIndicator()),
                 },

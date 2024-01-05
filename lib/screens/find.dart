@@ -12,6 +12,32 @@ class FindPage extends ConsumerWidget {
     final theme = Theme.of(context);
     final featuredTournament = ref.watch(fetchFeaturedTournamentsProvider(filter: filter));
 
+    Widget tournamentsWidget;
+    switch (featuredTournament) {
+      case AsyncData(:final value):
+        if (value.isEmpty) {
+          tournamentsWidget = const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text("No upcoming events found. Register on start.gg and tournaments will show here"),
+          );
+        } else {
+          tournamentsWidget = Expanded(
+            child: ListView.builder(
+                itemCount: value.length,
+                itemBuilder: (BuildContext context, int i) {
+                  return TournamentWidget(tournament: value[i]);
+                }),
+          );
+        }
+      case AsyncError(:final error):
+        tournamentsWidget = Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text("An error occured! Please try again or report a bug. $error"),
+        );
+      case _:
+        tournamentsWidget = const Center(child: CircularProgressIndicator());
+    }
+
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(fetchFeaturedTournamentsProvider(filter: filter));
@@ -24,19 +50,7 @@ class FindPage extends ConsumerWidget {
             child: Text('Featured Tournaments', style: theme.textTheme.labelMedium),
           ),
           const SizedBox(height: 10),
-          Expanded(
-              child: switch (featuredTournament) {
-            AsyncData(:final value) => ListView.builder(
-                itemCount: value.length,
-                itemBuilder: (BuildContext context, int i) {
-                  return TournamentWidget(tournament: value[i]);
-                }),
-            AsyncError() => const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text("No upcoming events found. Register on start.gg and tournaments will show here"),
-              ),
-            _ => const CircularProgressIndicator(),
-          }),
+          tournamentsWidget,
         ],
       ),
     );

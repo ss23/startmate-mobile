@@ -65,9 +65,14 @@ class FollowedUsers extends _$FollowedUsers {
 
       var userData = result.data!['user'];
 
+      var imageUrl = '';
+      if (userData['images'] != null && userData['images'].length > 0) {
+        imageUrl = userData['images'][0]['url'];
+      }
+
       // TODO: Check if image exists first
       // FIXME: Check if image exists first (e.g. no profile picture)
-      var user = User(userData['id'], userData['player']['gamerTag'], userData['images'][0]['url']);
+      var user = User(userData['id'], userData['player']['gamerTag'], imageUrl);
       data.add(FollowedUser(user));
     }
 

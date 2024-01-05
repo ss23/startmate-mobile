@@ -67,7 +67,7 @@ class TournamentWidget extends StatelessWidget {
                   child: Row(
                     children: [
                       const Icon(Icons.calendar_month),
-                      Text(DateFormat('yyyy-MM-dd – kk:mm').format(tournament.startAt)),
+                      Text(DateFormat('yyyy-MM-dd - kk:mm').format(tournament.startAt)),
                     ],
                   )),
               if (tournament.city != null || tournament.locationDisplayName != null)
@@ -110,9 +110,12 @@ class TournamentWidget extends StatelessWidget {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          tournament.events[j].name,
-                                          style: theme.textTheme.headlineSmall,
+                                        Expanded(
+                                          child: Text(
+                                            tournament.events[j].name,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: theme.textTheme.headlineSmall,
+                                          ),
                                         ),
                                         // TODO: Use a different icon/interaction if we haven't registered for this event
                                         // tODO: Fix this so we can show an icon for if we're registered!
@@ -121,7 +124,7 @@ class TournamentWidget extends StatelessWidget {
                                     ),
                                     Text(tournament.events[j].videogame.name),
                                     Text('${tournament.events[j].numEntrants} entrants'),
-                                    FilledButton(
+                                    /*FilledButton(
                                       // TODO: Take us to the bracket view page
                                       onPressed: () {
                                         Navigator.push(
@@ -130,7 +133,7 @@ class TournamentWidget extends StatelessWidget {
                                         );
                                       },
                                       child: const Text("Bracket"),
-                                    ),
+                                    ), */
                                   ],
                                 ),
                               ),

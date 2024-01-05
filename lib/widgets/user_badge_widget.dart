@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:startmate/user.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class UserBadgeWidget extends StatelessWidget {
   final User user;
@@ -16,12 +18,18 @@ class UserBadgeWidget extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: Row(children: [
-            ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(50)),
-                child: user.profileImage!.isNotEmpty ? Image.network(
-                  user.profileImage!,
+            SizedBox(
+                height: 100,
+                width: 100,
+                child: user.profileImage!.isNotEmpty ? CachedNetworkImage(
+                  imageUrl: user.profileImage!,
+                  imageBuilder: (context, imageProvider) => CircleAvatar(
+                    radius: 50,
+                    backgroundImage: imageProvider,
+                  ),
+                  placeholder: (context, url) => const CircularProgressIndicator(),
                 ) : Container(),
-                ),
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 12.0),
               child: Column(children: [

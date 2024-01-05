@@ -43,11 +43,22 @@ Future<List<User>> fetchUsers(FetchUsersRef ref, dynamic search) async {
   List<User> data = [];
 
   for (var user in result['data']['players']['nodes']) {
+    // For some reason, while we are fetching players, we cannot always link these to a user (privacy settings?)
+    // As we only want to be able to show players here that we can follow, we can ignore any that aren't followable
+    if (user['user'] == null) {
+      log.fine("Skipped user with missing user ID: $user");
+      continue;
+    }
     var imageURL = "";
-    if (user['images'].isNotEmpty) {
+    if (user['images'] != null && user['images'].isNotEmpty) {
       imageURL = user['images'][0]['url'];
     }
-    var obj = User(user['user']['id'], user['gamerTag'], imageURL);
+    var gamerTag = "";
+    if (user['gamerTag'] != null && user['gamerTag'].isNotEmpty) {
+      gamerTag = user['gamerTag'];
+    }
+
+    var obj = User(user['user']['id'], gamerTag, imageURL);
     data.add(obj);
   }
 
