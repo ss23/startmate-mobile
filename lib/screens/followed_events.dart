@@ -35,7 +35,7 @@ class FollowedEventsPage extends ConsumerWidget {
                 actions: [
                   ElevatedButton(
                     onPressed: () {
-                      ref.read(followedUsersProvider.notifier).unfollowUser(id: value[i].user.id!);
+                      ref.read(followedUsersProvider.notifier).unfollowUser(id: value[i].user.id);
                     },
                     child: Text(AppLocalizations.of(context)!.followUserUnfollowLabel),
                   ),

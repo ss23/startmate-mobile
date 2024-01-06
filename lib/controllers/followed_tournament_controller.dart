@@ -2,11 +2,9 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:startmate/controllers/followed_users_controller.dart';
-import 'package:startmate/event.dart';
 import 'package:startmate/helpers/graphql.dart';
 import 'package:startmate/helpers/oauth.dart';
-import 'package:startmate/tournament.dart';
-import 'package:startmate/videogame.dart';
+import 'package:startmate/models/startgg/tournament.dart';
 
 part 'followed_tournament_controller.g.dart';
 
@@ -76,36 +74,13 @@ Future<List<Tournament>> fetchFollowedTournaments(FetchFollowedTournamentsRef re
         continue;
       }
 
-      // Create tournament object to begin with
-      final tournamentObj = Tournament(tournament['id'], tournament['name'], DateTime.fromMillisecondsSinceEpoch(tournament['startAt'] * 1000));
-      tournamentObj.city = tournament['city'];
-      tournamentObj.slug = tournament['slug'];
-      // Loop over events
-      for (final event in tournament['events']) {
-        // Create a videogame for this event
-        // TODO: Reuse videogame objects
-        final videogame = VideoGame(event['videogame']['id'], event['videogame']['name'], event['videogame']['images'][0]['url']);
-
-        // Create event
-        final eventObj = Event(event['id'], event['name'], videogame, DateTime.fromMillisecondsSinceEpoch(event['startAt'] * 1000), event['numEntrants']);
-        eventObj.slug = event['slug'];
-        eventObj.tournament = tournamentObj;
-        tournamentObj.events.add(eventObj);
-
-        // If we are participating, add it to our participating events list so we can later determine if we're registered for this event
-      }
-      // Loop over images
-      for (final image in tournament['images']) {
-        if (image['type'] == 'banner') {
-          tournamentObj.imageURL = image['url'];
-        }
-      }
+      final tournamentObj = Tournament.fromJson(tournament);
       data.add(tournamentObj);
     }
   }
 
   // Sort the data
-  data.sort((a, b) => a.startAt.compareTo(b.startAt));
+  data.sort((a, b) => a.startAt!.compareTo(b.startAt!));
 
   return data;
 }

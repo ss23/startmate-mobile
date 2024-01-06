@@ -1,12 +1,10 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:startmate/event.dart';
 import 'package:startmate/helpers/graphql.dart';
 import 'package:startmate/helpers/oauth.dart';
-import 'package:startmate/tournament.dart';
-import 'package:startmate/user.dart';
-import 'package:startmate/videogame.dart';
+import 'package:startmate/models/startgg/tournament.dart';
+import 'package:startmate/models/startgg/user.dart';
 
 part 'tournament_controller.g.dart';
 
@@ -21,7 +19,7 @@ Future<List<Tournament>> fetchTournaments(FetchTournamentsRef ref, {required dyn
   final client = await GraphQLHelper().client;
 
   // Begin by getting our clients ID
-  var query = r'query user { currentUser { id, name, images (type: "profile") { url } } }';
+  var query = r'query user { currentUser { id name images { id type url } player { id gamerTag prefix } } }';
   var options = QueryOptions(document: gql(query));
   var result = await client.query(options);
 
@@ -44,16 +42,12 @@ Future<List<Tournament>> fetchTournaments(FetchTournamentsRef ref, {required dyn
     throw Exception('Unable to fetch tournament data');
   }
 
-  String? profileURL;
-  if (result.data!['currentUser']['images'].length > 0) {
-    profileURL = result.data!['currentUser']['images'][0]['url'];
-  }
-  final currentUser = User(result.data!['currentUser']['id'], result.data!['currentUser']['name'], profileURL);
+  final currentUser = User.fromJson(result.data!['currentUser']);
 
   // One query to select all the information we need about upcoming events, etc
   // TODO: Pagination
   query =
-      r'query user($userId: ID!, $filter: UserTournamentsPaginationFilter!, $sortBy: String!) { currentUser { id, tournaments(query: { filter: $filter, sortBy: $sortBy } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, userEntrant(userId: $userId) { id } videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
+      r'query user($userId: ID!, $filter: UserTournamentsPaginationFilter!, $sortBy: String!) { currentUser { tournaments(query: { filter: $filter, sortBy: $sortBy } ) { nodes { id, addrState, city, countryCode, slug, createdAt, endAt, images { id, height, ratio, type, url, width }, lat, lng, name, numAttendees, postalCode, startAt, state, tournamentType, events { id, name, startAt, state, numEntrants, slug, userEntrant(userId: $userId) { id } videogame { id, name, displayName, images(type: "primary") { id, type, url } } } } } } }';
   options = QueryOptions(document: gql(query), variables: {'userId': currentUser.id, 'filter': filter, 'sortBy': sortBy});
   result = await client.query(options);
 
@@ -65,33 +59,7 @@ Future<List<Tournament>> fetchTournaments(FetchTournamentsRef ref, {required dyn
 
   final data = <Tournament>[];
   for (final tournament in result.data!['currentUser']['tournaments']['nodes']) {
-    // Create tournament object to begin with
-    final tournamentObj = Tournament(tournament['id'], tournament['name'], DateTime.fromMillisecondsSinceEpoch(tournament['startAt'] * 1000));
-    tournamentObj.city = tournament['city'];
-    tournamentObj.slug = tournament['slug'];
-    // Loop over events
-    for (final event in tournament['events']) {
-      // Create a videogame for this event
-      // TODO: Reuse videogame objects
-      final videogame = VideoGame(event['videogame']['id'], event['videogame']['name'], event['videogame']['images'][0]['url']);
-
-      // Create event
-      final eventObj = Event(event['id'], event['name'], videogame, DateTime.fromMillisecondsSinceEpoch(event['startAt'] * 1000), event['numEntrants']);
-      eventObj.slug = event['slug'];
-      eventObj.tournament = tournamentObj;
-      tournamentObj.events.add(eventObj);
-
-      // If we are participating, add it to our participating events list so we can later determine if we're registered for this event
-      if (event['userEntrant'] != null) {
-        currentUser.upcomingEvents.add(event['id']);
-      }
-    }
-    // Loop over images
-    for (final image in tournament['images']) {
-      if (image['type'] == 'banner') {
-        tournamentObj.imageURL = image['url'];
-      }
-    }
+    final tournamentObj = Tournament.fromJson(tournament);
     data.add(tournamentObj);
   }
 

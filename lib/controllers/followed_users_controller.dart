@@ -6,7 +6,7 @@ import 'package:startmate/helpers/database.dart';
 import 'package:startmate/helpers/graphql.dart';
 import 'package:startmate/helpers/oauth.dart';
 import 'package:startmate/models/followed_user.dart';
-import 'package:startmate/user.dart';
+import 'package:startmate/models/startgg/user.dart';
 
 part 'followed_users_controller.g.dart';
 
@@ -17,7 +17,7 @@ class FollowedUsers extends _$FollowedUsers {
   Future<List<FollowedUser>> _fetch() async {
     final db = await DatabaseHelper().database;
     final users = await db.query('followed_users');
-    final followedUsers = users.map((u) => u['id']).toList();
+    final followedUsers = users.map((u) => u['id']).toList().cast<String>();
 
     final accessToken = ref.watch(oAuthTokenProvider).requireValue;
 
@@ -27,7 +27,7 @@ class FollowedUsers extends _$FollowedUsers {
     final data = <FollowedUser>[];
 
     for (final userId in followedUsers) {
-      const query = r'query user($userId: ID!) { user(id: $userId) { id name player { gamerTag } images(type: "profile") { id type url } } }';
+      const query = r'query user($userId: ID!) { user(id: $userId) { id name player { id gamerTag prefix } images { id type url } } }';
       final options = QueryOptions(document: gql(query), variables: {'userId': userId});
       final result = await client.query(options);
 
@@ -56,23 +56,13 @@ class FollowedUsers extends _$FollowedUsers {
 
         // We still want to give users a way of clearing/removing this broken user, since it could be persistent and slow down servers, etc etc
         // TODO: Decide whether we should silently remove users who fail at this step instead of this
-        // TODO: We need to sort out null saftey on models. We are passing an empty string here so it "just works", but instead we should handle nulls properly.
-        final user = User(userId as int?, 'Error $userId', '');
+        final user = User(id: userId);
         data.add(FollowedUser(user));
 
         continue;
       }
 
-      final userData = result.data!['user'];
-
-      var imageUrl = '';
-      if (userData['images'] != null && userData['images'].length > 0) {
-        imageUrl = userData['images'][0]['url'];
-      }
-
-      // TODO: Check if image exists first
-      // FIXME: Check if image exists first (e.g. no profile picture)
-      final user = User(userData['id'], userData['player']['gamerTag'], imageUrl);
+      final user = User.fromJson(result.data!['user']);
       data.add(FollowedUser(user));
     }
 
@@ -84,7 +74,7 @@ class FollowedUsers extends _$FollowedUsers {
     return _fetch();
   }
 
-  Future<void> unfollowUser({required int id}) async {
+  Future<void> unfollowUser({required String id}) async {
     state = const AsyncValue.loading();
 
     final db = await DatabaseHelper().database;
@@ -99,7 +89,7 @@ class FollowedUsers extends _$FollowedUsers {
     });
   }
 
-  Future<void> followUser({required int id}) async {
+  Future<void> followUser({required String id}) async {
     state = const AsyncValue.loading();
 
     final db = await DatabaseHelper().database;

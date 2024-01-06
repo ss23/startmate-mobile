@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:startmate/controllers/follow_user_search_controller.dart';
 import 'package:startmate/controllers/followed_users_controller.dart';
-import 'package:startmate/user.dart';
+import 'package:startmate/models/startgg/user.dart';
 import 'package:startmate/widgets/user_badge_widget.dart';
 
 class FollowUserPage extends ConsumerStatefulWidget {
@@ -61,7 +61,7 @@ class _FollowUserPageState extends ConsumerState<FollowUserPage> {
                               actions: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    ref.read(followedUsersProvider.notifier).followUser(id: value[i].id!);
+                                    ref.read(followedUsersProvider.notifier).followUser(id: value[i].id);
                                     Navigator.pop(context);
                                   },
                                   child: Text(AppLocalizations.of(context)!.followUserButtonLabel),

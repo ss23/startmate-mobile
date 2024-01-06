@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:startmate/user.dart';
+import 'package:startmate/models/startgg/user.dart';
 part 'follow_user_search_controller.g.dart';
 
 @riverpod
@@ -17,7 +17,7 @@ Future<List<User>> fetchUsers(FetchUsersRef ref, dynamic search) async {
   // TODO: Pagination
   // We're using a different API to usual, so we can avoid all our oauth code, as well as our normal adaptors
   final queryParams = {
-    'query': r'query user($query: PlayerQuery!) { players(query: $query) { nodes { id name prefix gamerTag images(type: "profile") { id type url } user { id } } } }',
+    'query': r'query user($query: PlayerQuery!) { players(query: $query) { nodes { id user { id name images { id type url } player { id prefix gamerTag } } } } }',
     'variables': '{"query":{"filter":{"searchField":$escapedSearch}}}',
   };
   final url = Uri.https('www.start.gg', '/api/-/gql-public', queryParams);
@@ -41,24 +41,16 @@ Future<List<User>> fetchUsers(FetchUsersRef ref, dynamic search) async {
 
   final data = <User>[];
 
-  for (final user in result['data']['players']['nodes']) {
+  for (final player in result['data']['players']['nodes']) {
     // For some reason, while we are fetching players, we cannot always link these to a user (privacy settings?)
     // As we only want to be able to show players here that we can follow, we can ignore any that aren't followable
-    if (user['user'] == null) {
-      log.fine('Skipped user with missing user ID: $user');
+    if (player['user'] == null) {
+      log.fine('Skipped user with missing user ID: $player');
       continue;
     }
-    var imageURL = '';
-    if (user['images'] != null && user['images'].isNotEmpty) {
-      imageURL = user['images'][0]['url'];
-    }
-    var gamerTag = '';
-    if (user['gamerTag'] != null && user['gamerTag'].isNotEmpty) {
-      gamerTag = user['gamerTag'];
-    }
 
-    final obj = User(user['user']['id'], gamerTag, imageURL);
-    data.add(obj);
+    final user = User.fromJson(player['user']);
+    data.add(user);
   }
 
   log.fine('Tournament data fetched successfully');

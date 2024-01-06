@@ -34,10 +34,12 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^2.4.9
+  freezed_annotation: ^2.4.1
   go_router: ^13.0.1
   graphql_flutter: ^5.2.0-beta.5
   http: ^1.1.0
   intl: any
+  json_annotation: ^4.8.1
   logging: ^1.2.0
   oauth2: ^2.0.2
   path: ^1.8.3
@@ -54,6 +56,8 @@ dev_dependencies:
   flutter_lints: ^3.0.1
   flutter_test:
     sdk: flutter
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
   riverpod_generator: ^2.3.9
   riverpod_lint: ^2.3.7
   very_good_analysis: ^5.1.0

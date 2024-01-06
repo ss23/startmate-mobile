@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:startmate/helpers/url.dart';
-import 'package:startmate/tournament.dart';
+import 'package:startmate/models/startgg/tournament.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class TournamentWidget extends StatelessWidget {
@@ -26,7 +26,7 @@ class TournamentWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (tournament.imageURL != null)
+              if (tournament.image('profile') != null)
                 ClipRRect(
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8),
@@ -39,7 +39,7 @@ class TournamentWidget extends StatelessWidget {
                       fit: BoxFit.fitWidth,
                       child: CachedNetworkImage(
                         placeholder: (context, url) => Image.memory(kTransparentImage),
-                        imageUrl: tournament.imageURL!,
+                        imageUrl: tournament.image('profile')!.url,
                       ),
                     ),
                   ),
@@ -67,7 +67,7 @@ class TournamentWidget extends StatelessWidget {
                   children: [
                     const Icon(Icons.calendar_month),
                     // TODO: i18n for this date
-                    Text(DateFormat('yyyy-MM-dd - kk:mm').format(tournament.startAt)),
+                    Text(DateFormat('yyyy-MM-dd - kk:mm').format(tournament.startAt!)),
                   ],
                 ),
               ),
@@ -81,19 +81,19 @@ class TournamentWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-              if (tournament.events.isNotEmpty) const Divider(),
-              Padding(
+              if (tournament.events != null && tournament.events!.isNotEmpty) const Divider(),
+              if (tournament.events != null && tournament.events!.isNotEmpty) Padding(
                 padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
                 child: Column(
                   children: [
-                    for (int j = 0; j < tournament.events.length; j++)
+                    for (int j = 0; j < tournament.events!.length; j++)
                       Column(
                         children: [
                           GestureDetector(
                             behavior: HitTestBehavior.translucent,
                             onTap: () {
                               log.finer('Clicked event');
-                              urlLaunch(Uri.parse('https://www.start.gg/${tournament.events[j].slug}'));
+                              urlLaunch(Uri.parse('https://www.start.gg/${tournament.events![j].slug}'));
                             },
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,7 +102,7 @@ class TournamentWidget extends StatelessWidget {
                                   height: 120,
                                   width: 90, // This width is based on the aspect ratio of the videogame images
                                   child: CachedNetworkImage(
-                                    imageUrl: tournament.events[j].videogame.imageURL!, // Every videogame should have an image!
+                                    imageUrl: tournament.events![j].videogame!.image('primary')!.url, // Every videogame should have primary image
                                     placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
                                   ),
                                 ),
@@ -117,7 +117,7 @@ class TournamentWidget extends StatelessWidget {
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                tournament.events[j].name,
+                                                tournament.events![j].name,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: theme.textTheme.headlineSmall,
                                               ),
@@ -127,8 +127,8 @@ class TournamentWidget extends StatelessWidget {
                                             //if (appState.currentUser!.upcomingEvents.contains(tournament.events[j].id)) const Icon(Icons.check_circle_outline, color: Colors.green)
                                           ],
                                         ),
-                                        Text(tournament.events[j].videogame.name),
-                                        Text('${tournament.events[j].numEntrants} entrants'),
+                                        Text(tournament.events![j].videogame!.displayName),
+                                        Text('${tournament.events![j].numEntrants} entrants'),
                                         /*FilledButton(
                                       // TODO: Take us to the bracket view page
                                       onPressed: () {
@@ -146,7 +146,7 @@ class TournamentWidget extends StatelessWidget {
                               ],
                             ),
                           ),
-                          if (j != (tournament.events.length - 1)) const Divider(),
+                          if (j != (tournament.events!.length - 1)) const Divider(),
                         ],
                       ),
                   ],

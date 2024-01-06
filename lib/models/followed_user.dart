@@ -1,4 +1,4 @@
-import 'package:startmate/user.dart';
+import 'package:startmate/models/startgg/user.dart';
 
 class FollowedUser {
   FollowedUser(this.user);

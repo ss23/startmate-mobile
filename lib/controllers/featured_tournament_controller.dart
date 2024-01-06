@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:startmate/tournament.dart';
+import 'package:startmate/models/startgg/tournament.dart';
+
 part 'featured_tournament_controller.g.dart';
 
 @riverpod
@@ -34,11 +35,7 @@ Future<List<Tournament>> fetchFeaturedTournaments(FetchFeaturedTournamentsRef re
 
   final data = <Tournament>[];
   for (final tournament in result['data']['tournaments']['nodes']) {
-    final tournamentObj = Tournament(tournament['id'], tournament['name'], DateTime.fromMillisecondsSinceEpoch(tournament['startAt'] * 1000));
-    tournamentObj.imageURL = tournament['images'][1]['url'];
-    tournamentObj.slug = tournament['slug'];
-    tournamentObj.isOnline = tournament['isOnline'];
-    tournamentObj.locationDisplayName = tournament['locationDisplayName'] ?? 'Online';
+    final tournamentObj = Tournament.fromJson(tournament);
     data.add(tournamentObj);
   }
 

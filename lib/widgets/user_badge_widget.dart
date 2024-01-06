@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:startmate/user.dart';
+import 'package:startmate/models/startgg/user.dart';
 
 class UserBadgeWidget extends StatelessWidget {
   const UserBadgeWidget(this.user, {super.key, this.actions = const []});
@@ -21,9 +21,9 @@ class UserBadgeWidget extends StatelessWidget {
               SizedBox(
                 height: 100,
                 width: 100,
-                child: user.profileImage!.isNotEmpty
+                child: (user.image('profile') != null)
                     ? CachedNetworkImage(
-                        imageUrl: user.profileImage!,
+                        imageUrl: user.image('profile')!.url,
                         imageBuilder: (context, imageProvider) => CircleAvatar(
                           radius: 50,
                           backgroundImage: imageProvider,
@@ -36,7 +36,7 @@ class UserBadgeWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 12),
                 child: Column(
                   children: [
-                    Text(user.name!),
+                    Text((user.player != null && user.player!.gamerTag != null) ? user.player!.gamerTag! : ((user.name != null) ? user.name! : 'Error - unknown name')),
                     for (final widget in actions) widget,
                   ],
                 ),
