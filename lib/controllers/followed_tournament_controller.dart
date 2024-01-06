@@ -70,7 +70,7 @@ Future<List<Tournament>> fetchFollowedTournaments(FetchFollowedTournamentsRef re
 
     for (final tournament in result.data!['user']['tournaments']['nodes']) {
       // Perform deduplication here
-      if (data.where((t) => t.id == tournament['id']).isNotEmpty) {
+      if (data.where((t) => t.id == tournament['id'].toString()).isNotEmpty) {
         continue;
       }
 
