@@ -34,6 +34,7 @@ class _FollowUserPageState extends ConsumerState<FollowUserPage> {
           children: [
             TextField(
               autocorrect: false,
+              autofocus: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: AppLocalizations.of(context)!.followUserSearchLabel,
