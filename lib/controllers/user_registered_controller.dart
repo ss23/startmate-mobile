@@ -22,7 +22,8 @@ Future<List<User>> fetchRegisteredUsers(FetchRegisteredUsersRef ref, {required S
   final client = await GraphQLHelper().client;
 
   // TODO: Pagination over all participants, not just the first 500
-  const query = r'query tournament($tournamentId: ID!) { tournament(id: $tournamentId) { id participants(query: {perPage: 500}) { nodes { user { id name images { id type url } player { id gamerTag prefix } } } } } }';
+  // TODO: Determine what the "real" limit is, since we also have to worry about query complexity (e.g. 500 perpage could mean 1500 results in total)
+  const query = r'query tournament($tournamentId: ID!) { tournament(id: $tournamentId) { id participants(query: {perPage: 250}) { nodes { user { id name images { id type url } player { id gamerTag prefix } } } } } }';
   final options = QueryOptions(document: gql(query), variables: {'tournamentId': id});
   final result = await client.query(options);
 
