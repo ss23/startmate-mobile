@@ -9,9 +9,9 @@ This is a cross-platform (Android and iOS) mobile application for interacting wi
     <td>Follow friends tournaments</td>
   </tr>
   <tr>
-    <td><img src="assets/Screenshot_1704542473.png" width=324 height=666></td>
-    <td><img src="assets/Screenshot_1704542407.png" width=324 height=666></td>
-    <td><img src="assets/Screenshot_1704542455.png" width=324 height=666></td>
+    <td><img src="assets/Screenshot_1704542473.png" width=216 height=444></td>
+    <td><img src="assets/Screenshot_1704542407.png" width=216 height=444></td>
+    <td><img src="assets/Screenshot_1704542455.png" width=216 height=444></td>
   </tr>
 </table>
 
