@@ -93,5 +93,9 @@
     "findFeaturedLabel": "Featured Tournaments",
     "@findFeaturedLabel": {
       "description": "Label for the list of featured tournaments on the find page"
+    },
+    "tournamentRegisterLabel": "Register",
+    "@tournamentRegisterLabel": {
+      "description": "Button that links to the form to register for a tournament"
     }
   }

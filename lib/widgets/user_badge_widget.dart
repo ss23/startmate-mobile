@@ -36,7 +36,7 @@ class UserBadgeWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 12),
                 child: Column(
                   children: [
-                    Text((user.player != null && user.player!.gamerTag != null) ? user.player!.gamerTag! : ((user.name != null) ? user.name! : 'Error - unknown name')),
+                    Expanded(child: Text((user.player != null && user.player!.gamerTag != null) ? user.player!.gamerTag! : ((user.name != null) ? user.name! : 'Error - unknown name'))),
                     for (final widget in actions) widget,
                   ],
                 ),
