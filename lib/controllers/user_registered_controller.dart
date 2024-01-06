@@ -54,8 +54,6 @@ Future<List<User>> fetchRegisteredUsers(FetchRegisteredUsersRef ref, {required S
     }
     data.add(User.fromJson(participant['user']));
   }
-
-  log.info(data);
-
+  
   return data;
 }
