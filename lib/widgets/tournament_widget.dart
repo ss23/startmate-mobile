@@ -192,7 +192,7 @@ class TournamentWidget extends ConsumerWidget {
                                             ],
                                           ),
                                           Text(tournament.events![j].videogame!.displayName),
-                                          Text('${tournament.events![j].numEntrants} entrants'),
+                                          Text(AppLocalizations.of(context)!.tournamentEventEntrantsText(tournament.events![j].numEntrants!)),
                                           /*FilledButton(
                                       // TODO: Take us to the bracket view page
                                       onPressed: () {

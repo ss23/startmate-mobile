@@ -97,5 +97,15 @@
     "tournamentRegisterLabel": "Register",
     "@tournamentRegisterLabel": {
       "description": "Button that links to the form to register for a tournament"
+    },
+    "tournamentEventEntrantsText": "{count, plural, =1{1 entrant} other{{count} entrants}}",
+    "@tournamentEventEntrantsText": {
+      "description": "Text to indicate how many entrants are attending an event in a tournament",
+      "placeholders": {
+        "count":{
+          "type": "num",
+          "format": "compact"
+        }
+      }
     }
   }
