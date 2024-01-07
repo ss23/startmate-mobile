@@ -94,6 +94,9 @@ class OAuthToken extends _$OAuthToken {
   }
 
   Future<void> finish(Uri responseUrl) async {
+    // Ensure that the WebView is closed at this point
+    await closeInAppWebView();
+    
     // Once the user is redirected to `redirectUrl`, pass the query parameters to
     // the AuthorizationCodeGrant. It will validate them and extract the
     // authorization code to create a new Client.
