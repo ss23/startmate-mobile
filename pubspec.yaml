@@ -29,6 +29,8 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   cached_network_image: ^3.3.0
+  circular_buffer: ^0.11.0
+  cross_file: ^0.3.3+8
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -45,6 +47,7 @@ dependencies:
   path: ^1.8.3
   path_provider: ^2.1.1
   riverpod_annotation: ^2.3.3
+  share_plus: ^7.2.1
   sqflite: ^2.3.0
   transparent_image: ^2.0.1
   uni_links: ^0.5.1

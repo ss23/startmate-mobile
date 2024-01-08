@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:startmate/controllers/log_controller.dart';
 import 'package:startmate/helpers/oauth.dart';
 import 'package:startmate/widgets/loading_widget.dart';
 
@@ -34,6 +35,13 @@ class OnboardingPage extends ConsumerWidget {
             appBar: AppBar(
               title: Text(AppLocalizations.of(context)!.authenticateError),
               automaticallyImplyLeading: false,
+              actions: const [
+                IconButton(
+                  icon: Icon(Icons.add_alert),
+                  tooltip: 'Capture logs',
+                  onPressed: shareLog,
+                ),
+              ],
             ),
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
