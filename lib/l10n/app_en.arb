@@ -50,6 +50,26 @@
     "@authenticateRequestPending": {
       "description": "Briefly displayed message while the application is verifying the oauth credentials saved or just obtained"
     },
+    "authenticateMissingCredentials": "No credentials were recieved from start.gg",
+    "@authenticateMissingCredentials": {
+      "description": "Short description shown to user when the application does not recieve any credentials after redirecting to the start.gg authorization page"
+    },
+    "authenticateMissingCredentialsHelp": "You can try authorizing again (such as if you inadvertently clicked back or deny instead of authorize)",
+    "@authenticateMissingCredentialsHelp": {
+      "description": "Further help shown to the user if they are shown the missing credentials error"
+    },
+    "authenticateVerifyingCredentials": "Saving credentials",
+    "@authenticateVerifyingCredentials": {
+      "description": "Short description of the current application state while it is attempting to verify and save the credentials it recieved from start.gg"
+    },
+    "authenticateError": "Error",
+    "@authenticateError": {
+      "description": "AppBar title for when an error occurs during authentication"
+    },
+    "authenticateRedirectStartgg": "Redirecting to start.gg",
+    "@authenticateRedirectStartgg": {
+      "description": "Message shown to use when they click authorize and are being redirected to start.gg to complete authentication"
+    },
     "followUserEmpty": "Follow a user to see their events",
     "@followUserEmpty": {
       "description": "Text shown to the user when there are no users they are currently following, in place of where the followed users would be"

@@ -24,6 +24,53 @@ class OnboardingPage extends ConsumerWidget {
       return LoadingWidget(reason: AppLocalizations.of(context)!.authenticateSuccessRedirect);
     }
 
+    if (oAuthToken is AsyncError) {
+      // This state is when we have been redirected, but more than 2 seconds have passed.
+      // Most likely, this means the user clicked back or did not approve the authorization
+      // This could also happen if a bug occurs related to handling the application specific URIs.
+      switch (oAuthToken.error) {
+        case 'redirected-to-startgg':
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(AppLocalizations.of(context)!.authenticateError),
+              automaticallyImplyLeading: false,
+            ),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Text(AppLocalizations.of(context)!.authenticateMissingCredentials),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Text(
+                    AppLocalizations.of(context)!.authenticateMissingCredentialsHelp,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    ref.read(oAuthTokenProvider.notifier).authenticate();
+                  },
+                  child: Text(AppLocalizations.of(context)!.authenticateRequestLabel),
+                ),
+              ],
+            ),
+          );
+        // This means that we recieved the credentials back from start.gg and are just verifying that they work before proceeding
+        case 'verifying':
+          return LoadingWidget(reason: AppLocalizations.of(context)!.authenticateVerifyingCredentials);
+        default:
+          return Text(AppLocalizations.of(context)!.genericError(oAuthToken.error!.toString()));
+      }
+    }
+
+    // Loading here means that we are redirecting to start.gg
+    if (oAuthToken is AsyncLoading) {
+      return LoadingWidget(reason: AppLocalizations.of(context)!.authenticateRedirectStartgg);
+    }
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,

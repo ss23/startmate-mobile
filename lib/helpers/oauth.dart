@@ -91,12 +91,22 @@ class OAuthToken extends _$OAuthToken {
     // authorization code.
     await redirect(authorizationUrl);
     await listen();
+    Future.delayed(const Duration(seconds: 2), () {
+      // TODO: Ensure we don't overwrite state coming back from finish() if the user completed that step quickly
+      _log.info('Setting state to error');
+      state = AsyncValue.error('redirected-to-startgg', StackTrace.current);
+    });
   }
 
   Future<void> finish(Uri responseUrl) async {
+    // Update our state that we're loading again, rather than errored
+    // This is surely meant to be a loading state, not an error state, but I don't know how to set another value on a loading state to indicate this
+    // TODO: Figure out a way to represent this state as loading, rather than error
+    state = AsyncValue.error('verifying', StackTrace.current);
+
     // Ensure that the WebView is closed at this point
     await closeInAppWebView();
-    
+
     // Once the user is redirected to `redirectUrl`, pass the query parameters to
     // the AuthorizationCodeGrant. It will validate them and extract the
     // authorization code to create a new Client.
