@@ -30,6 +30,7 @@ const credentialsPath = 'credentials.json';
 class OAuthToken extends _$OAuthToken {
   final _log = Logger('OAuthToken');
   oauth2.AuthorizationCodeGrant? _grant;
+  bool _hasListened = false;
 
   @override
   FutureOr<String> build() async {
@@ -136,6 +137,10 @@ class OAuthToken extends _$OAuthToken {
   }
 
   Future<void> listen() async {
+    // We only need to call listen() once across the lifetime of this provider, since it won't be removed later.
+    if (_hasListened) return;
+    _hasListened = true;
+
     uriLinkStream.listen((Uri? uri) {
       if (uri.toString().startsWith(redirectUrl.toString())) {
         finish(uri!);
@@ -144,5 +149,11 @@ class OAuthToken extends _$OAuthToken {
         _log.warning('Recieved unexpected URI: {$uri}');
       }
     });
+  }
+
+  Future<void> forceReset() async {
+    final appDirectory = await getApplicationDocumentsDirectory();
+    final credentialsFile = File(Path.join(appDirectory.path, credentialsPath));
+    credentialsFile.deleteSync();
   }
 }

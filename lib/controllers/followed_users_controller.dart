@@ -37,6 +37,7 @@ class FollowedUsers extends _$FollowedUsers {
             final exception = result.exception!.linkException! as HttpLinkServerException;
             if (exception.parsedResponse!.response['message'] == 'Invalid authentication token') {
               _log.warning('Invalid authentication token. Forcing reauthentication');
+              await ref.read(oAuthTokenProvider.notifier).forceReset();
               ref.invalidate(oAuthTokenProvider);
               // Clear GraphQL cache too
               await client.resetStore(refetchQueries: false);
