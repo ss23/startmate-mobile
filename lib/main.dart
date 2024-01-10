@@ -8,23 +8,20 @@ import 'package:startmate/screens/base.dart';
 void main() {
   // Configure logging
   LoggerHelper.init();
-  
+
   runApp(
-    ProviderScope(
+    const ProviderScope(
       child: MaterialApp(
-        localizationsDelegates: const [
+        localizationsDelegates: [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [
+        supportedLocales: [
           Locale('en'), // English
         ],
-        home: const BasePage(),
-        theme: ThemeData(
-          useMaterial3: true,
-        ),
+        home: BasePage(),
       ),
     ),
   );
