@@ -21,13 +21,10 @@ class Tournament with _$Tournament {
     // List<user> admins,
     String? city,
     String? countryCode,
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? createdAt,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? createdAt,
     String? currency,
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? endAt,
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? eventRegistrationClosesAt,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? endAt,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? eventRegistrationClosesAt,
     List<Event>? events,
     bool? hasOfflineEvents,
     bool? hasOnlineEvents,
@@ -45,26 +42,22 @@ class Tournament with _$Tournament {
     String? primaryContact,
     String? primaryContactType,
     // JSON? publishing,
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? registrationClosesAt,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? registrationClosesAt,
     String? rules,
     String? shortSlug,
     String? slug,
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? startAt,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? startAt,
     // ActivityState::CREATED, ActivityState::ACTIVE, ActivityState::COMPLETED
     int? state,
     // List<Station> stations,
     // StreamQueue streamQueue,
     /// The documentation calls this "streams", rather than "List<Stream>"
     // Streams streams,
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? teamCreationClosesAt,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? teamCreationClosesAt,
     // List<Team> teams,
     String? timezone,
     int? tournamentType,
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? updatedAt,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? updatedAt,
     String? url,
     String? venueAddress,
     String? venueName,

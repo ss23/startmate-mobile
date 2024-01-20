@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:startmate/helpers/startgg_parsing_helpers.dart';
 import 'package:startmate/models/startgg/image.dart';
+import 'package:startmate/models/startgg/phase.dart';
 import 'package:startmate/models/startgg/tournament.dart';
 import 'package:startmate/models/startgg/videogame.dart';
 
@@ -26,11 +27,9 @@ class Event with _$Event {
     // Rough categorization of event tier, denoting relative importance in the competitive scene
     int? competitionTier,
     // When the event was created
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? createdAt,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? createdAt,
     // Last date attendees are able to create teams for team events
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? deckSubmissionDeadline,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? deckSubmissionDeadline,
     // The entrants that belong to an event, paginated by filter criteria
     // List<Entrant> entrants,
     // Whether the event has decks
@@ -48,7 +47,7 @@ class Event with _$Event {
     // The phase groups that belong to an event.
     // PhaseGroup phaseGroups,
     // The phases that belong to an event.
-    // List<Phase> phases,
+    List<Phase>? phases,
     // TO settings for prizing
     // prizingInfo: JSON
     // publishing: JSON
@@ -61,16 +60,14 @@ class Event with _$Event {
     String? slug,
     // List<Standing> standings
     // When does this event start?
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? startAt,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? startAt,
     // The state of the Event.
     // ActivityState::CREATED, ActivityState::ACTIVE, ActivityState::COMPLETED
     String? state,
     // Stations on this event
     // List<Station> stations
     // Last date attendees are able to create teams for team events
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? teamManagementDeadline,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? teamManagementDeadline,
     // If this is a teams event, returns whether or not teams can set custom names
     bool? teamNameAllowed,
     // Team roster size requirements
@@ -79,8 +76,7 @@ class Event with _$Event {
     // The type of the event, whether an entrant will have one participant or multiple
     int? type,
     // When the event was last modified (unix timestamp)
-    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull)
-    DateTime? updatedAt,
+    @JsonKey(fromJson: datetimeFromTimestamp, defaultValue: datetimeNull) DateTime? updatedAt,
     // Whether the event uses the new EventSeeds for seeding
     bool? useEventSeeds,
     Videogame? videogame,

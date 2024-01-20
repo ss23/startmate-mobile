@@ -9,6 +9,7 @@ import 'package:startmate/controllers/followed_users_controller.dart';
 import 'package:startmate/controllers/user_registered_controller.dart';
 import 'package:startmate/helpers/url.dart';
 import 'package:startmate/models/startgg/tournament.dart';
+import 'package:startmate/screens/bracket.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class TournamentWidget extends ConsumerWidget {
@@ -193,16 +194,15 @@ class TournamentWidget extends ConsumerWidget {
                                           ),
                                           Text(tournament.events![j].videogame!.displayName),
                                           Text(AppLocalizations.of(context)!.tournamentEventEntrantsText(tournament.events![j].numEntrants!)),
-                                          /*FilledButton(
-                                      // TODO: Take us to the bracket view page
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => EventBracketPage(event: tournament.events[j])),
-                                        );
-                                      },
-                                      child: const Text("Bracket"),
-                                    ), */
+                                          FilledButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => BracketPage(event: tournament.events![j], tournament: tournament)),
+                                              );
+                                            },
+                                            child: Text(AppLocalizations.of(context)!.tournamentBracketButton),
+                                          ),
                                         ],
                                       ),
                                     ),

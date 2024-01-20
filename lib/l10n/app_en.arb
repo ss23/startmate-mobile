@@ -1,131 +1,177 @@
 {
-    "@@locale": "en",
-    "navigationRegistered": "Registered",
-    "@navigationRegistered": {
-      "description": "Navigation label for the Registered page, the events the currently logged in user is signed up for"
-    },
-    "navigationFollowed": "Followed",
-    "@navigationFollowed": {
-      "description": "Navigation label for the Followed page, the events attended by users the currently logged in user follows"
-    },
-    "navigationFind": "Find",
-    "@navigationFind": {
-      "description": "Navigation label for the Find page, such as events featured by start.gg"
-    },
-    "genericError": "An error has occured. Please try again or report a bug. Details: {error}",
-    "@genericError": {
-      "description": "User-facing message when an error needs to be presented within the UI.",
-      "placeholders": {
-        "error": {
-          "type": "String",
-          "example": "e (where e is an exception)"
-        }
-      }
-    },
-    "registeredTournamentsLabel": "Registered Tournaments",
-    "@registeredTournamentsLabel": {
-      "description": "Label for the list of tournaments the logged in user is registered for"
-    },
-    "registeredTournamentsEmpty": "You aren't registered for any upcoming tournaments. As registration is not currently supported in this application, register on start.gg and come back here.",
-    "@registeredTournamentsEmpty": {
-      "description": "Text shown to the user when there are no tournaments they are currently registered for, in place of where tournaments would be"
-    },
-    "authenticateSuccessRedirect": "Authenticated successfully! Redirecting...",
-    "@authenticateSuccessRedirect": {
-      "description": "Briefly displayed message once credentials have been recieved from start.gg and a redirect to the Home of the application is in progress."
-    },
-    "authenticateRequest": "To use this application, you need to authenticate using start.gg. Click the following button to launch a browser and authorize your account. You will be redirected back here when finished.",
-    "@authenticateRequest": {
-      "description": "Message requesting the user complete authentication with start.gg to begin using the application"
-    },
-    "authenticateRequestLabel": "Authenticate",
-    "@authenticateRequestLabel": {
-      "description": "Button label to begin authentication with start.gg"
-    },
-    "authenticateRequestRedirect": "Redirecting to onboarding",
-    "@authenticateRequestRedirect": {
-      "description": "Briefly displayed message before application is redirected to the onboarding screen, in the case where the user is not currently logged in"
-    },
-    "authenticateRequestPending": "Authenticating",
-    "@authenticateRequestPending": {
-      "description": "Briefly displayed message while the application is verifying the oauth credentials saved or just obtained"
-    },
-    "authenticateMissingCredentials": "No credentials were recieved from start.gg",
-    "@authenticateMissingCredentials": {
-      "description": "Short description shown to user when the application does not recieve any credentials after redirecting to the start.gg authorization page"
-    },
-    "authenticateMissingCredentialsHelp": "You can try authorizing again (such as if you inadvertently clicked back or deny instead of authorize)",
-    "@authenticateMissingCredentialsHelp": {
-      "description": "Further help shown to the user if they are shown the missing credentials error"
-    },
-    "authenticateVerifyingCredentials": "Saving credentials",
-    "@authenticateVerifyingCredentials": {
-      "description": "Short description of the current application state while it is attempting to verify and save the credentials it recieved from start.gg"
-    },
-    "authenticateError": "Error",
-    "@authenticateError": {
-      "description": "AppBar title for when an error occurs during authentication"
-    },
-    "authenticateRedirectStartgg": "Redirecting to start.gg",
-    "@authenticateRedirectStartgg": {
-      "description": "Message shown to use when they click authorize and are being redirected to start.gg to complete authentication"
-    },
-    "followUserEmpty": "Follow a user to see their events",
-    "@followUserEmpty": {
-      "description": "Text shown to the user when there are no users they are currently following, in place of where the followed users would be"
-    },
-    "followUserUnfollowLabel": "Unfollow",
-    "@followUserUnfollowLabel": {
-      "description": "Button label to unfollow a user"
-    },
-    "followUserTournamentsEmpty": "No upcoming tournaments found. Follow more people to see their tournaments",
-    "@followUserTournamentsEmpty": {
-      "description": "Text shown to the user when there are no tournaments from users they are currently following, in place of where the tournaments would be"
-    },
-    "followUserUsersLabel": "Followed Users",
-    "@followUserUsersLabel": {
-      "description": "Label for the list of users the logged in user is following"
-    },
-    "followUserTournamentsLabel": "Tournaments",
-    "@followUserTournamentsLabel": {
-      "description": "Label for the list of tournaments from users logged in user is following"
-    },
-    "followUserFollowLabel": "Follow a user",
-    "@followUserFollowLabel": {
-      "description": "Title for screen to follow a user"
-    },
-    "followUserSearchLabel": "Search for a user",
-    "@followUserSearchLabel": {
-      "description": "Button label to search for a user to follow"
-    },
-    "followUserButtonLabel": "Follow",
-    "@followUserButtonLabel": {
-      "description": "Button label to follow a user"
-    },
-    "followUserUsersEmpty": "No users found",
-    "@followUserUsersEmpty": {
-      "description": "Text shown to the user when there are no users found from the search they performed"
-    },
-    "findFeaturedEmpty": "No featured events found",
-    "@findFeaturedEmpty": {
-      "description": "Text shown to the user when there are no featured tournaments on start.gg. This is highly unlikely to ever occur, unless by error."
-    },
-    "findFeaturedLabel": "Featured Tournaments",
-    "@findFeaturedLabel": {
-      "description": "Label for the list of featured tournaments on the find page"
-    },
-    "tournamentRegisterLabel": "Register",
-    "@tournamentRegisterLabel": {
-      "description": "Button that links to the form to register for a tournament"
-    },
-    "tournamentEventEntrantsText": "{count, plural, =1{1 entrant} other{{count} entrants}}",
-    "@tournamentEventEntrantsText": {
-      "description": "Text to indicate how many entrants are attending an event in a tournament",
-      "placeholders": {
-        "count":{
-          "type": "num",
-          "format": "compact"
-        }
+  "@@locale": "en",
+  "navigationRegistered": "Registered",
+  "@navigationRegistered": {
+    "description": "Navigation label for the Registered page, the events the currently logged in user is signed up for"
+  },
+  "navigationFollowed": "Followed",
+  "@navigationFollowed": {
+    "description": "Navigation label for the Followed page, the events attended by users the currently logged in user follows"
+  },
+  "navigationFind": "Find",
+  "@navigationFind": {
+    "description": "Navigation label for the Find page, such as events featured by start.gg"
+  },
+  "genericError": "An error has occured. Please try again or report a bug. Details: {error}",
+  "@genericError": {
+    "description": "User-facing message when an error needs to be presented within the UI.",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "e (where e is an exception)"
       }
     }
+  },
+  "registeredTournamentsLabel": "Registered Tournaments",
+  "@registeredTournamentsLabel": {
+    "description": "Label for the list of tournaments the logged in user is registered for"
+  },
+  "registeredTournamentsEmpty": "You aren't registered for any upcoming tournaments. As registration is not currently supported in this application, register on start.gg and come back here.",
+  "@registeredTournamentsEmpty": {
+    "description": "Text shown to the user when there are no tournaments they are currently registered for, in place of where tournaments would be"
+  },
+  "authenticateSuccessRedirect": "Authenticated successfully! Redirecting...",
+  "@authenticateSuccessRedirect": {
+    "description": "Briefly displayed message once credentials have been recieved from start.gg and a redirect to the Home of the application is in progress."
+  },
+  "authenticateRequest": "To use this application, you need to authenticate using start.gg. Click the following button to launch a browser and authorize your account. You will be redirected back here when finished.",
+  "@authenticateRequest": {
+    "description": "Message requesting the user complete authentication with start.gg to begin using the application"
+  },
+  "authenticateRequestLabel": "Authenticate",
+  "@authenticateRequestLabel": {
+    "description": "Button label to begin authentication with start.gg"
+  },
+  "authenticateRequestRedirect": "Redirecting to onboarding",
+  "@authenticateRequestRedirect": {
+    "description": "Briefly displayed message before application is redirected to the onboarding screen, in the case where the user is not currently logged in"
+  },
+  "authenticateRequestPending": "Authenticating",
+  "@authenticateRequestPending": {
+    "description": "Briefly displayed message while the application is verifying the oauth credentials saved or just obtained"
+  },
+  "authenticateMissingCredentials": "No credentials were recieved from start.gg",
+  "@authenticateMissingCredentials": {
+    "description": "Short description shown to user when the application does not recieve any credentials after redirecting to the start.gg authorization page"
+  },
+  "authenticateMissingCredentialsHelp": "You can try authorizing again (such as if you inadvertently clicked back or deny instead of authorize)",
+  "@authenticateMissingCredentialsHelp": {
+    "description": "Further help shown to the user if they are shown the missing credentials error"
+  },
+  "authenticateVerifyingCredentials": "Saving credentials",
+  "@authenticateVerifyingCredentials": {
+    "description": "Short description of the current application state while it is attempting to verify and save the credentials it recieved from start.gg"
+  },
+  "authenticateError": "Error",
+  "@authenticateError": {
+    "description": "AppBar title for when an error occurs during authentication"
+  },
+  "authenticateRedirectStartgg": "Redirecting to start.gg",
+  "@authenticateRedirectStartgg": {
+    "description": "Message shown to use when they click authorize and are being redirected to start.gg to complete authentication"
+  },
+  "followUserEmpty": "Follow a user to see their events",
+  "@followUserEmpty": {
+    "description": "Text shown to the user when there are no users they are currently following, in place of where the followed users would be"
+  },
+  "followUserUnfollowLabel": "Unfollow",
+  "@followUserUnfollowLabel": {
+    "description": "Button label to unfollow a user"
+  },
+  "followUserTournamentsEmpty": "No upcoming tournaments found. Follow more people to see their tournaments",
+  "@followUserTournamentsEmpty": {
+    "description": "Text shown to the user when there are no tournaments from users they are currently following, in place of where the tournaments would be"
+  },
+  "followUserUsersLabel": "Followed Users",
+  "@followUserUsersLabel": {
+    "description": "Label for the list of users the logged in user is following"
+  },
+  "followUserTournamentsLabel": "Tournaments",
+  "@followUserTournamentsLabel": {
+    "description": "Label for the list of tournaments from users logged in user is following"
+  },
+  "followUserFollowLabel": "Follow a user",
+  "@followUserFollowLabel": {
+    "description": "Title for screen to follow a user"
+  },
+  "followUserSearchLabel": "Search for a user",
+  "@followUserSearchLabel": {
+    "description": "Button label to search for a user to follow"
+  },
+  "followUserButtonLabel": "Follow",
+  "@followUserButtonLabel": {
+    "description": "Button label to follow a user"
+  },
+  "followUserUsersEmpty": "No users found",
+  "@followUserUsersEmpty": {
+    "description": "Text shown to the user when there are no users found from the search they performed"
+  },
+  "findFeaturedEmpty": "No featured events found",
+  "@findFeaturedEmpty": {
+    "description": "Text shown to the user when there are no featured tournaments on start.gg. This is highly unlikely to ever occur, unless by error."
+  },
+  "findFeaturedLabel": "Featured Tournaments",
+  "@findFeaturedLabel": {
+    "description": "Label for the list of featured tournaments on the find page"
+  },
+  "tournamentRegisterLabel": "Register",
+  "@tournamentRegisterLabel": {
+    "description": "Button that links to the form to register for a tournament"
+  },
+  "tournamentEventEntrantsText": "{count, plural, =1{1 entrant} other{{count} entrants}}",
+  "@tournamentEventEntrantsText": {
+    "description": "Text to indicate how many entrants are attending an event in a tournament",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "tournamentBracketButton": "Bracket",
+  "@tournamentBracketButton": {
+    "description": "Button linking to page to view information about bracket for the event"
+  },
+  "bracketBracketLabel": "Brackets",
+  "@bracketBracketLabel": {
+    "description": "Label for section of the bracket page showing the different brackets in the event. Internally, these are the Phases"
+  },
+  "bracketEntrantsText": "{count, plural, =1{1 entrant} other{{count} entrants}}",
+  "@bracketEntrantsText": {
+    "description": "Text to indicate how many entrants are participating in a given pool",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "bracketPoolgroupsText": "{count, plural, =1{1 pool} other{{count} pools}}",
+  "@bracketPoolgroupsText": {
+    "description": "Text to indicate how many pool groups are in a pool",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "bracketPhaseGroupLabel": "Pool {phaseGroupLabel}",
+  "@bracketPhaseGroupLabel": {
+    "description": "Label for a phase group. The official start.gg web interface terms these Pools in English",
+    "placeholders": {
+      "phaseGroupLabel": {
+        "type": "String",
+        "example": "A150"
+      }
+    }
+  },
+  "bracketPhaseRedirect": "Redirecting to pools",
+  "@bracketPhaseRedirect": {
+    "description": "When an event has only a single phase (such as a small local), instead of listing the single phase and making the user click, they are automatically redirected. This is the message briefly shown to the user when this happens."
+  },
+  "bracketPhaseGroupRedirect": "Redirecting to sets",
+  "@bracketPhaseGroupRedirect": {
+    "description": "When a phase has only a single phasegroup (such as a small local), instead of listing the single phasegroup and making the user click, they are automatically redirected. This is the message briefly shown to the user when this happens."
   }
+}
