@@ -173,5 +173,9 @@
   "bracketPhaseGroupRedirect": "Redirecting to sets",
   "@bracketPhaseGroupRedirect": {
     "description": "When a phase has only a single phasegroup (such as a small local), instead of listing the single phasegroup and making the user click, they are automatically redirected. This is the message briefly shown to the user when this happens."
+  },
+  "bracketDisqualified": "DQ",
+  "@bracketDisqualified": {
+    "description": "Round score label for when a player is disqualified."
   }
 }

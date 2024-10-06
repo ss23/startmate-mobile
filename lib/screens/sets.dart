@@ -16,6 +16,7 @@ class SetsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final sets = ref.watch(fetchBracketSetProvider(phaseGroupId: phaseGroup.id));
 
     // We want to visually distinguish between losers and winners sets, so we sort them into buckets here
@@ -39,41 +40,79 @@ class SetsPage extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(fetchBracketSetProvider(phaseGroupId: phaseGroup.id));
-        },
-        child: switch (sets) {
-          // ignore: unused_local_variable
-          AsyncValue<List<Set>>(:final valueOrNull?) => SingleChildScrollView(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Winners sets
-                    Row(
-                      children: [
-                        for (final roundSets in winnersSetsByRound.values) BracketWidget(sets: roundSets),
-                      ],
-                    ),
-                    // Losers sets
-                    Row(
-                      children: [
-                        // Because we need this in reversed order, we convert to a list here
-                        // TODO: Reverse the order of the splayed map instead of extra work here
-                        for (final roundSets in losersSetsByRound.values.toList().reversed) BracketWidget(sets: roundSets),
-                      ],
-                    ),
-                  ],
-                ),
+      appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
+            onPressed: () {
+              ref.invalidate(fetchBracketSetProvider(phaseGroupId: phaseGroup.id));
+            },
+          ),
+        ],
+      ),
+      body: switch (sets) {
+        // ignore: unused_local_variable
+        AsyncValue<List<Set>>(:final valueOrNull?) => SingleChildScrollView(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Winners side titles
+                  Row(
+                    children: [
+                      for (final roundSets in winnersSetsByRound.values)
+                        SizedBox(
+                          width: 224,
+                          child: Center(
+                            child: Text(
+                              roundSets[0].fullRoundText!,
+                              style: theme.textTheme.labelLarge,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  // Winners sets
+                  Row(
+                    children: [
+                      for (final roundSets in winnersSetsByRound.values) BracketWidget(sets: roundSets),
+                    ],
+                  ),
+                  const SizedBox(height: 50),
+                  // Losers side titles
+                  Row(
+                    children: [
+                      for (final roundSets in losersSetsByRound.values.toList().reversed)
+                        SizedBox(
+                          width: 224,
+                          child: Center(
+                            child: Text(
+                              roundSets[0].fullRoundText!,
+                              style: theme.textTheme.labelLarge,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  // Losers sets
+                  Row(
+                    children: [
+                      // Because we need this in reversed order, we convert to a list here
+                      // TODO: Reverse the order of the splayed map instead of extra work here
+                      for (final roundSets in losersSetsByRound.values.toList().reversed) BracketWidget(sets: roundSets),
+                    ],
+                  ),
+                ],
               ),
             ),
-          AsyncValue(:final error?) => Text(AppLocalizations.of(context)!.genericError(error.toString())),
-          _ => const CircularProgressIndicator(),
-        },
-      ),
+          ),
+        AsyncValue(:final error?) => Text(AppLocalizations.of(context)!.genericError(error.toString())),
+        _ => const CircularProgressIndicator(),
+      },
     );
   }
 }
