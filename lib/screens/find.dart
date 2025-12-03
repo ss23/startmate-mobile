@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:startmate/controllers/featured_tournament_controller.dart';
+import 'package:startmate/l10n/app_localizations.dart';
 import 'package:startmate/widgets/tournament_widget.dart';
 
 class FindPage extends ConsumerWidget {

@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -8,6 +7,7 @@ import 'package:startmate/controllers/current_user_controller.dart';
 import 'package:startmate/controllers/followed_users_controller.dart';
 import 'package:startmate/controllers/user_registered_controller.dart';
 import 'package:startmate/helpers/url.dart';
+import 'package:startmate/l10n/app_localizations.dart';
 import 'package:startmate/models/startgg/tournament.dart';
 import 'package:startmate/screens/bracket.dart';
 import 'package:transparent_image/transparent_image.dart';

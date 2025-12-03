@@ -1,10 +1,10 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:startmate/controllers/bracket_set_controller.dart';
+import 'package:startmate/l10n/app_localizations.dart';
 import 'package:startmate/models/startgg/phasegroup.dart';
 import 'package:startmate/models/startgg/set.dart';
 import 'package:startmate/widgets/bracket_widget.dart';

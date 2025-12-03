@@ -1,11 +1,12 @@
 import 'dart:io';
+
+import 'package:app_links/app_links.dart';
 import 'package:logging/logging.dart';
 import 'package:oauth2/oauth2.dart' as oauth2;
 // ignore: library_prefixes
 import 'package:path/path.dart' as Path;
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 part 'oauth.g.dart';
@@ -141,7 +142,8 @@ class OAuthToken extends _$OAuthToken {
     if (_hasListened) return;
     _hasListened = true;
 
-    uriLinkStream.listen((Uri? uri) {
+  final appLinks = AppLinks();
+    appLinks.uriLinkStream.listen((Uri? uri) {
       if (uri.toString().startsWith(redirectUrl.toString())) {
         finish(uri!);
       } else {

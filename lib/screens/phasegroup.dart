@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:startmate/controllers/bracket_phase_controller.dart';
+import 'package:startmate/l10n/app_localizations.dart';
 import 'package:startmate/models/startgg/phase.dart';
 import 'package:startmate/models/startgg/phasegroup.dart';
 import 'package:startmate/screens/sets.dart';
